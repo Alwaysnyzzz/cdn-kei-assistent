@@ -1,0 +1,228 @@
+.tourl-card {
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 30px;
+    padding: 30px;
+    max-width: 700px;
+    margin: 40px auto;
+    box-shadow: 0 0 30px #ff69b4;
+}
+
+.tourl-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tourl-header i {
+    font-size: 3.5rem;
+    color: #ff69b4;
+    margin-bottom: 10px;
+}
+
+.tourl-header h2 {
+    color: #ffb6c1;
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+}
+
+.tourl-header p {
+    color: #ffccdd;
+    font-size: 1rem;
+}
+
+.upload-area {
+    border: 2px dashed #ff69b4;
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 20px;
+}
+
+.upload-area:hover {
+    background: rgba(255,105,180,0.1);
+    border-color: #ff1493;
+}
+
+.upload-area i {
+    font-size: 3rem;
+    color: #ff69b4;
+    margin-bottom: 15px;
+}
+
+.upload-area p {
+    color: #ffb6c1;
+    font-size: 1.1rem;
+}
+
+.file-info {
+    color: #ffccdd;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    word-break: break-word;
+}
+
+.button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.btn-upload {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 15px 40px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px #ff69b4;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-upload:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff1493;
+}
+
+.btn-upload:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.loading.show {
+    display: flex;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 4px solid rgba(255,105,180,0.3);
+    border-top: 4px solid #ff1493;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.result-area {
+    margin-top: 30px;
+    border-top: 1px solid rgba(255,105,180,0.3);
+    padding-top: 25px;
+}
+
+.result-label {
+    color: #ffb6c1;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.url-container {
+    display: flex;
+    gap: 10px;
+}
+
+.url-input {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #ff69b4;
+    border-radius: 60px;
+    padding: 12px 20px;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.btn-copy {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px #ff69b4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-copy:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff1493;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #0d0015, #1a001a);
+    border: 2px solid #ff69b4;
+    border-radius: 40px;
+    max-width: 500px;
+    width: 90%;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 0 50px #ff1493;
+    text-align: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #ff69b4;
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #ff1493;
+}
+
+.modal h2 {
+    color: #ffb6c1;
+    margin-bottom: 15px;
+}
+
+.modal p {
+    color: #ffccdd;
+    margin-bottom: 25px;
+}
+
+.modal-button {
+    margin-top: 20px;
+}

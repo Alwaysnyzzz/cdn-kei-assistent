@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEI ASSISTENT · Contact</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+    <style>
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .contact-card {
+            background: black;
+            border: 2px solid #ff69b4;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 0 20px #ff69b4;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .platform-header {
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0 auto;
+            box-shadow: 0 0 15px currentColor;
+        }
+        .platform-header i { margin-right: 10px; }
+        .platform-header.whatsapp {
+            background: #25D366;
+            color: white;
+            border: 2px solid #075E54;
+        }
+        .platform-header.telegram {
+            background: #0088cc;
+            color: white;
+            border: 2px solid #004d73;
+        }
+        .contact-info {
+            background: #0d0015;
+            border: 2px solid #ff69b4;
+            border-radius: 50px;
+            padding: 15px 20px;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            box-shadow: 0 0 15px #ff69b4;
+            word-break: break-word;
+        }
+        .contact-info i { margin-right: 8px; color: #ff69b4; }
+        .btn-contact {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            width: 100%;
+            box-shadow: 0 0 15px #ff69b4;
+        }
+        .btn-contact:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px #ff1493;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+    <div class="wrapper">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                <div class="logo-text">
+                    <h1>KEI ASSISTENT</h1>
+                    <p>pink neon · dokumentasi api</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="alat.html">Alat</a>
+                <a href="contact.html" class="active">Contact</a>
+                <a href="product.html">Product</a>
+                <a href="donasi.html">Donasi</a>
+            </div>
+        </header>
+
+<div class="dashboard-image">
+    <img src="image.jpg" alt="Dashboard">
+</div>
+
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="platform-header whatsapp">
+                    <i class="fab fa-whatsapp"></i> WHATSAPP
+                </div>
+                <div class="contact-info">
+                    <i class="fab fa-whatsapp"></i> <span id="wa-number">+62 877-1347-2756</span>
+                </div>
+                <a href="#" id="wa-link" class="btn-contact" target="_blank">
+                    <i class="fas fa-paper-plane"></i> HUBUNGI
+                </a>
+            </div>
+            <div class="contact-card">
+                <div class="platform-header telegram">
+                    <i class="fab fa-telegram-plane"></i> TELEGRAM
+                </div>
+                <div class="contact-info">
+                    <i class="fab fa-telegram-plane"></i> <span id="telegram-username">@keikawaiii</span>
+                </div>
+                <a href="#" id="telegram-link" class="btn-contact" target="_blank">
+                    <i class="fas fa-paper-plane"></i> HUBUNGI
+                </a>
+            </div>
+        </div>
+
+        <footer>© 2025 KEI ASSISTENT</footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jnicol/particleground/jquery.particleground.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultConfig = {
+                WA_NUMBER: '+62 877-1347-2756',
+                WA_LINK: 'https://wa.me/6287713472756',
+                TELEGRAM_USERNAME: '@keikawaiii',
+                TELEGRAM_LINK: 'https://t.me/keikawaiii'
+            };
+            const config = window.CONFIG || defaultConfig;
+            document.getElementById('wa-number').textContent = config.WA_NUMBER;
+            document.getElementById('telegram-username').textContent = config.TELEGRAM_USERNAME;
+            document.getElementById('wa-link').href = config.WA_LINK;
+            document.getElementById('telegram-link').href = config.TELEGRAM_LINK;
+        });
+    </script>
+</body>
+</html>

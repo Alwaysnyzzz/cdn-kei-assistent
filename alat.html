@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEI ASSISTENT · Alat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .api-card {
+            background: black;
+            border: 2px solid #ff69b4;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 0 20px #ff69b4;
+            transition: 0.3s;
+        }
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px #ff1493;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,105,180,0.1);
+            padding: 10px 15px;
+            border-radius: 40px;
+            margin-bottom: 15px;
+        }
+        .method {
+            background: #ff1493;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 40px;
+            font-weight: bold;
+        }
+        .endpoint {
+            font-family: monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 40px;
+            color: #ffb6c1;
+            border: 1px dashed #ff69b4;
+        }
+        .card-body h3 {
+            color: #ffb6c1;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .card-body p {
+            color: #ffccdd;
+            line-height: 1.6;
+        }
+        .card-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .btn-detail {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px #ff69b4;
+        }
+        .btn-detail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #ff1493;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: transparent;
+            width: 95%;
+            max-width: 1000px;
+            height: 85vh;
+            position: relative;
+            border: none;
+            box-shadow: none;
+        }
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 0 30px #ff1493;
+        }
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #ff69b4;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .close-modal:hover {
+            color: #ff1493;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+    <div class="wrapper">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                <div class="logo-text">
+                    <h1>KEI ASSISTENT</h1>
+                    <p>pink neon · alat</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="alat.html" class="active">Alat</a>
+                <a href="contact.html">Contact</a>
+                <a href="product.html">Product</a>
+                <a href="donasi.html">Donasi</a>
+            </div>
+        </header>
+
+        <!-- Gambar dashboard (gunakan image.jpg di root) -->
+        <div class="dashboard-image">
+            <img src="image.jpg" alt="Dashboard">
+        </div>
+
+        <div class="card-grid">
+            <div class="api-card">
+                <div class="card-header">
+                    <span class="method">TOOL</span>
+                    <span class="endpoint">/tourl-image</span>
+                </div>
+                <div class="card-body">
+                    <h3>Tourl Image</h3>
+                    <p>Upload gambar dan dapatkan link langsung. Bisa untuk gambar, audio, video, dll.</p>
+                </div>
+                <div class="card-footer">
+    <a href="alat/tourlimage.html" class="btn-detail">
+        <i class="fas fa-external-link-alt"></i> Buka Alat
+    </a>
+</div>
+            </div>
+        </div>
+
+        <footer>© 2025 KEI ASSISTENT</footer>
+    </div>
+
+    <!-- Modal untuk menampilkan tourlimage.html -->
+    <div id="toolModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeToolModal">&times;</button>
+            <iframe src="alat/tourlimage.html" title="Tourl Image"></iframe>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jnicol/particleground/jquery.particleground.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen modal
+            const modal = document.getElementById('toolModal');
+            const openBtn = document.getElementById('openToolBtn');
+            const closeBtn = document.getElementById('closeToolModal');
+
+            // Buka modal saat tombol diklik
+            if (openBtn) {
+                openBtn.addEventListener('click', function() {
+                    modal.classList.add('show');
+                });
+            }
+
+            // Tutup modal dengan tombol X
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    modal.classList.remove('show');
+                });
+            }
+
+            // Tutup modal jika klik di luar konten modal (background)
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+
+            // Inisialisasi particles
+            particleground(document.getElementById('particles'), {
+                dotColor: '#ffb6c1',
+                lineColor: '#ff69b4',
+                density: 12000
+            });
+        });
+    </script>
+</body>
+</html>
