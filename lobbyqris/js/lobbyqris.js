@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     startTimer(data.expiry);
 
-    // Download
     document.getElementById('downloadQrisBtn').addEventListener('click', async function() {
         const url = this.dataset.qrUrl;
         if (!url) return;
@@ -55,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
     });
 
-    // Cek status
     document.getElementById('checkStatusBtn').addEventListener('click', async function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
@@ -72,32 +70,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (res.ok && data.success) {
                 const tx = data.transaction;
-                if (tx.status === 'success') {
-                    document.getElementById('statusArea').innerHTML = '<p>✅ Sukses</p>';
-                } else if (tx.status === 'pending') {
-                    document.getElementById('statusArea').innerHTML = '<p>⏳ Menunggu</p>';
+                if (tx.status === 'success' || tx.status === 'paid') {
+                    document.getElementById('statusArea').innerHTML = '<p style="color:#28a745;">✅ Pembayaran sukses</p>';
+                } else if (tx.status === 'pending' || tx.status === 'waiting') {
+                    document.getElementById('statusArea').innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
                 } else {
-                    document.getElementById('statusArea').innerHTML = '<p>❌ Gagal</p>';
+                    document.getElementById('statusArea').innerHTML = '<p style="color:#ff69b4;">❌ Gagal</p>';
                 }
             } else {
-                document.getElementById('statusArea').innerHTML = '<p>Transaksi tidak ditemukan</p>';
+                document.getElementById('statusArea').innerHTML = '<p style="color:#ff69b4;">Transaksi tidak ditemukan</p>';
             }
         } catch (err) {
             overlay.classList.remove('show');
-            alert(err.message);
+            document.getElementById('statusArea').innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
         }
     });
 
-    // Batalkan
     document.getElementById('cancelBtn').addEventListener('click', function() {
         document.getElementById('cancelModal').classList.add('show');
     });
+
     document.getElementById('confirmCancelYes').addEventListener('click', function() {
         localStorage.removeItem(`lobbyQris_${transactionId}`);
         window.location.href = '../donasi.html';
     });
+
     document.getElementById('confirmCancelNo').addEventListener('click', function() {
         document.getElementById('cancelModal').classList.remove('show');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('cancelModal')) {
+            document.getElementById('cancelModal').classList.remove('show');
+        }
     });
 
     particleground(document.getElementById('particles'), {

@@ -9,18 +9,13 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="css/lobbyqris.css">
     <style>
-        /* Sembunyikan navigasi */
-        .nav-links {
-            display: none !important;
-        }
+        .nav-links { display: none !important; }
         header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
             padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+            border-bottom: 1px solid rgba(255,105,180,0.3);
             margin-bottom: 30px;
         }
         .logo-area {
@@ -46,7 +41,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px #ff69b4;
-            line-height: 1.2;
         }
         .logo-text p {
             font-size: 0.9rem;
@@ -79,57 +73,44 @@
 
         <div class="qris-card">
             <h2 style="color: #ffb6c1; text-align: center;">Scan QRIS</h2>
-            
-            <!-- ID Transaksi -->
             <div class="transaction-id">
                 ID Transaksi: <span id="transactionId">-</span>
             </div>
-
-            <div style="text-align: center; margin: 20px 0; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="text-align: center; margin: 20px 0; min-height: 220px;">
                 <img id="qrisImage" src="" alt="QRIS" style="max-width: 100%; border-radius: 0; display: none;">
                 <div id="localLoading" style="display: none; flex-direction: column; align-items: center;">
                     <div class="spinner-small"></div>
-                    <p style="color: #ffb6c1; margin-top: 10px;">Sedang memuat...</p>
+                    <p style="color: #ffb6c1;">Sedang memuat...</p>
                 </div>
             </div>
-
-            <div id="timerContainer" style="text-align: center; margin: 10px 0; color: #ffb6c1; font-weight: 600;">
+            <div id="timerContainer" style="text-align: center; margin: 10px 0; color: #ffb6c1;">
                 <i class="fas fa-hourglass-half"></i> <span id="timer">10:00</span> tersisa
             </div>
-
             <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
                 <button class="btn-copy" id="downloadQrisBtn">Download QR</button>
             </div>
-
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button class="btn-check-status" id="checkStatusBtn">
-                    <i class="fas fa-sync-alt"></i> Cek Status
-                </button>
-                <button class="btn-cancel" id="cancelBtn">
-                    <i class="fas fa-ban"></i> Batalkan Transaksi
-                </button>
+                <button class="btn-check-status" id="checkStatusBtn">Cek Status</button>
+                <button class="btn-cancel" id="cancelBtn">Batalkan Transaksi</button>
             </div>
-
             <div id="statusArea"></div>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p id="loadingText">Sedang membuat QRIS, mohon tunggu...</p>
+            <p id="loadingText">Memuat...</p>
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Batalkan -->
     <div id="cancelModal" class="modal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <h3 style="color: #ffb6c1; margin-bottom: 15px;">Batalkan Transaksi</h3>
-            <p style="color: #ffccdd; margin-bottom: 25px;">Apakah Anda yakin ingin membatalkan transaksi ini?</p>
+            <h3 style="color: #ffb6c1;">Batalkan Transaksi</h3>
+            <p style="color: #ffccdd; margin-bottom: 25px;">Apakah Anda yakin?</p>
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button id="confirmCancelYes" class="btn-check-status" style="background: #28a745; border: none;">Ya</button>
-                <button id="confirmCancelNo" class="btn-cancel" style="background: #dc3545;">Tidak</button>
+                <button id="confirmCancelYes" class="btn-check-status" style="background:#28a745;">Ya</button>
+                <button id="confirmCancelNo" class="btn-cancel" style="background:#dc3545;">Tidak</button>
             </div>
         </div>
     </div>
