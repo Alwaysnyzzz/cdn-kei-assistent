@@ -35,12 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             loadingOverlay.classList.remove('show');
 
+            // ===== TAMBAHKAN CONSOLE.LOG UNTUK DEBUG =====
+            console.log('Response from API:', data);
+            console.log('QR URL:', data.payment?.qr_url);
+            // =============================================
+
             if (response.ok && data.success) {
                 const payment = data.payment;
-                // Setelah sukses, tampilkan loading lokal
+                // Tampilkan loading lokal
                 qrisImage.style.display = 'none';
                 localLoading.style.display = 'flex';
-                // Tunggu 1,5 detik, lalu tampilkan QRIS
+
+                // Tunggu 1,5 detik lalu tampilkan QRIS
                 setTimeout(() => {
                     localLoading.style.display = 'none';
                     qrisImage.src = payment.qr_url;
