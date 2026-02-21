@@ -13,12 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Fungsi generate Order ID
     function generateOrderId() {
         return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
     }
 
-    // ===== TOMBOL NOMINAL CEPAT =====
+    // Tombol nominal cepat
     quickAmountBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             quickAmountBtns.forEach(b => b.classList.remove('active'));
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== INPUT MANUAL =====
+    // Input manual
     applyCustomBtn.addEventListener('click', function() {
         const customAmount = parseInt(customAmountInput.value);
         if (isNaN(customAmount) || customAmount < 230) {
@@ -47,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         quickAmountBtns.forEach(b => b.classList.remove('active'));
     });
 
-    // ===== TOMBOL BUAT QRIS =====
+    // Tombol Buat QRIS
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
 
@@ -80,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     expiry: expiry
                 }));
 
+                // PASTIKAN REDIRECT KE FOLDER YANG BENAR
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
                 alert('Gagal: ' + (data.error || 'Respons tidak valid'));
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== INISIALISASI PARTICLES =====
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',
