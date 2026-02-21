@@ -1,7 +1,16 @@
-.qris-container {
+.qris-card {
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 30px; /* card tumpul */
+    padding: 35px;
     max-width: 500px;
     margin: 40px auto;
-    padding: 20px;
+    box-shadow: 0 0 30px #ff69b4;
+}
+
+#qrisImage {
+    border-radius: 0; /* QRIS lancip */
+    max-width: 100%;
 }
 
 .btn-copy {

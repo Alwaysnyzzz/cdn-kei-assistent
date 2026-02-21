@@ -29,25 +29,30 @@
             </div>
         </header>
 
-        <div class="qris-container">
+        <!-- Card luar dengan sudut tumpul -->
+        <div class="qris-card">
             <h2 style="color: #ffb6c1; text-align: center; margin-bottom: 20px;">Scan QRIS</h2>
             
+            <!-- Area QR Code (gambar lancip) -->
             <div style="text-align: center; margin: 20px 0; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <img id="qrisImage" src="" alt="QRIS" style="max-width: 100%; border-radius: 20px; display: none;">
+                <img id="qrisImage" src="" alt="QRIS" style="max-width: 100%; border-radius: 0; display: none;">
                 <div id="localLoading" style="display: none; flex-direction: column; align-items: center;">
                     <div class="spinner-small"></div>
                     <p style="color: #ffb6c1; margin-top: 10px;">Sedang memuat...</p>
                 </div>
             </div>
 
+            <!-- Timer -->
             <div id="timerContainer" style="text-align: center; margin: 10px 0; color: #ffb6c1; font-weight: 600;">
                 <i class="fas fa-hourglass-half"></i> <span id="timer">10:00</span> tersisa
             </div>
 
+            <!-- Tombol Download -->
             <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
                 <button class="btn-copy" id="downloadQrisBtn">Download QR</button>
             </div>
 
+            <!-- Tombol Cek Status dan Batalkan -->
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="btn-check-status" id="checkStatusBtn">
                     <i class="fas fa-sync-alt"></i> Cek Status
@@ -57,10 +62,12 @@
                 </button>
             </div>
 
+            <!-- Area Status -->
             <div id="statusArea"></div>
         </div>
     </div>
 
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -68,6 +75,7 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Batalkan -->
     <div id="cancelModal" class="modal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <h3 style="color: #ffb6c1; margin-bottom: 15px;">Batalkan Transaksi</h3>
