@@ -30,85 +30,99 @@
     font-size: 1rem;
 }
 
-/* Quick amount buttons */
+/* Quick amount buttons dengan efek */
 .quick-amount-container {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 .quick-amount-btn {
     background: rgba(255,105,180,0.1);
     border: 1px solid #ff69b4;
     border-radius: 40px;
-    padding: 10px 15px;
+    padding: 12px 15px;
     color: #ffb6c1;
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
     flex: 1 0 auto;
-    min-width: 60px;
+    min-width: 70px;
+    position: relative;
+    overflow: hidden;
 }
-.quick-amount-btn:hover,
-.quick-amount-btn.active {
+.quick-amount-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+.quick-amount-btn:active::after {
+    width: 200px;
+    height: 200px;
+}
+.quick-amount-btn:hover {
     background: #ff69b4;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,105,180,0.4);
+}
+.quick-amount-btn.active {
+    background: #ff1493;
+    color: white;
+    box-shadow: 0 0 20px #ff1493;
 }
 
-/* Custom amount */
-.custom-amount-wrapper {
-    position: relative;
-    margin-bottom: 15px;
-}
-.custom-amount-toggle {
-    width: 100%;
+/* Tombol custom nominal */
+.btn-custom-nominal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: rgba(255,105,180,0.05);
     border: 1px dashed #ff69b4;
     border-radius: 60px;
     padding: 12px;
     color: #ffb6c1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    margin-bottom: 20px;
 }
-.custom-amount-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: black;
-    border: 2px solid #ff69b4;
-    border-radius: 20px;
-    padding: 15px;
-    margin-top: 5px;
-    z-index: 10;
-}
-.custom-amount-dropdown.show {
-    display: block;
-}
-.custom-amount-dropdown input {
-    width: 100%;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid #ff69b4;
-    border-radius: 60px;
-    padding: 10px 15px;
-    color: white;
-    margin-bottom: 10px;
-}
-.apply-custom {
-    width: 100%;
-    background: linear-gradient(135deg, #ff69b4, #ff1493);
-    border: none;
-    border-radius: 60px;
-    padding: 10px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+.btn-custom-nominal:hover {
+    background: rgba(255,105,180,0.2);
+    color: #ff1493;
+    border-color: #ff1493;
 }
 
+/* Info nominal terpilih */
+.selected-amount-info {
+    background: rgba(255,105,180,0.1);
+    border: 1px solid #ff69b4;
+    border-radius: 40px;
+    padding: 10px 15px;
+    margin: 15px 0;
+    color: #ffb6c1;
+    text-align: center;
+    font-weight: 600;
+    animation: fadeIn 0.3s ease;
+}
+.selected-amount-info i {
+    color: #28a745;
+    margin-right: 8px;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tombol Buat QRIS */
 .btn-donasi {
     width: 100%;
     background: linear-gradient(135deg, #ff69b4, #ff1493);
@@ -125,9 +139,8 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin: 10px 0;
 }
-.btn-donasi:hover {
+.btn-donasi:hover:not(:disabled) {
     transform: scale(1.02);
     box-shadow: 0 0 25px #ff1493;
 }
@@ -135,137 +148,7 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
-
-/* Tombol di modal */
-.btn-check-status {
-    background: #444;
-    border: 1px solid #888;
-    border-radius: 40px;
-    padding: 10px 15px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-check-status:hover {
-    background: #555;
-}
-.btn-cancel {
-    background: #b30000;
-    border: 1px solid #ff0000;
-    border-radius: 40px;
-    padding: 10px 15px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.btn-cancel:hover {
-    background: #cc0000;
-}
-
-/* Loading overlay */
-.loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    z-index: 3000;
-    align-items: center;
-    justify-content: center;
-}
-.loading-overlay.show {
-    display: flex;
-}
-.loading-content {
-    text-align: center;
-    color: #ffb6c1;
-}
-.loading-content .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255,105,180,0.3);
-    border-top: 5px solid #ff1493;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 15px;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Status area */
-.status-success, .status-failed {
-    text-align: center;
-    padding: 20px 0;
-}
-.success-circle {
-    background: #28a745;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    box-shadow: 0 0 20px #28a745;
-    animation: pulse 1.5s infinite;
-}
-.success-circle i {
-    font-size: 2.5rem;
-    color: white;
-}
-.failed-circle {
-    background: #dc3545;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    box-shadow: 0 0 20px #dc3545;
-}
-.failed-circle i {
-    font-size: 2.5rem;
-    color: white;
-}
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
-    50% { transform: scale(1.1); box-shadow: 0 0 40px #28a745; }
-    100% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
-}
-.transaction-details {
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    padding: 15px;
-    margin: 15px 0;
-    text-align: left;
-}
-.transaction-details p {
-    margin: 8px 0;
-    color: #ffccdd;
-}
-.btn-struk {
-    background: linear-gradient(135deg, #ff69b4, #ff1493);
-    border: none;
-    border-radius: 60px;
-    padding: 10px 25px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
+.btn-donasi:disabled:hover {
+    transform: none;
+    box-shadow: 0 0 15px #ff69b4;
 }

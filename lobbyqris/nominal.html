@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Nominal · KEI ASSISTENT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="css/nominal.css">
+    <style>
+        /* Sembunyikan navigasi, tampilkan header */
+        .nav-links {
+            display: none !important;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+            margin-bottom: 30px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 0 20px #ff69b4;
+        }
+        .logo-text h1 {
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffb6c1, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px #ff69b4;
+            line-height: 1.2;
+        }
+        .logo-text p {
+            font-size: 0.9rem;
+            color: #ffb6c1;
+        }
+        .dashboard-image {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+    <div class="wrapper">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                <div class="logo-text">
+                    <h1>KEI ASSISTENT</h1>
+                    <p>pink neon · nominal</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="nominal-card">
+            <h2 style="color: #ffb6c1; text-align: center;">Masukkan Nominal Sendiri</h2>
+            <div class="input-group">
+                <span class="currency-prefix">Rp</span>
+                <input type="number" id="customAmount" class="nominal-input" placeholder="Min 230" min="230" step="100">
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-back" onclick="history.back()">Kembali</button>
+                <button class="btn-submit" id="submitNominal">Buat QRIS</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jnicol/particleground/jquery.particleground.min.js"></script>
+    <script src="../script.js"></script>
+    <script src="js/nominal.js"></script>
+</body>
+</html>
