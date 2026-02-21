@@ -136,6 +136,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    width: 100%;
 }
 
 .url-input {
@@ -170,7 +171,7 @@
     box-shadow: 0 0 25px #ff1493;
 }
 
-/* Modal styles */
+/* Modal dasar */
 .modal {
     display: none;
     position: fixed;
@@ -193,7 +194,7 @@
     background: linear-gradient(145deg, #0d0015, #1a001a);
     border: 2px solid #ff69b4;
     border-radius: 40px;
-    max-width: 500px;
+    max-width: 600px;
     width: 90%;
     padding: 30px;
     position: relative;
@@ -231,11 +232,11 @@
     margin-top: 20px;
 }
 
-/* Success circle with pulse animation */
+/* Sukses circle */
 .success-circle {
     background: #28a745;
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -244,55 +245,149 @@
     box-shadow: 0 0 20px #28a745;
 }
 
+.success-circle i {
+    font-size: 4rem;
+    color: white;
+}
+
 .animated-pulse {
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 20px #28a745;
-    }
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 40px #28a745;
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 20px #28a745;
-    }
+    0% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
+    50% { transform: scale(1.1); box-shadow: 0 0 40px #28a745; }
+    100% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
 }
 
-/* Perbaikan modal sukses (centang lebih besar, tombol rapi) */
+/* ===== MODAL SUKSES (FINAL) ===== */
 #successModal .modal-content {
-    max-width: 500px;
-    width: 90%;
-    padding: 30px;
+    max-width: 650px;
+    width: 95%;
+    padding: 35px;
+    text-align: center;
 }
 
 #successModal .success-circle {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 25px;
+    margin: 0 auto 20px;
 }
 
-#successModal .success-circle i {
-    font-size: 4rem;
+#successModal h2 {
+    text-align: center;
+}
+
+#successModal p {
+    text-align: center;
 }
 
 #successModal .url-container {
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    margin: 20px 0;
 }
 
 #successModal .url-input {
-    flex: 1;
-    min-width: 0; /* mencegah input meluber */
+    flex: 1 1 auto;
+    min-width: 250px;
+    padding: 12px 15px;
+    font-size: 0.9rem;
 }
 
 #successModal .btn-copy {
+    flex: 0 0 auto;
     white-space: nowrap;
     padding: 12px 25px;
+    font-size: 1rem;
+}
+
+#successModal .warning-message {
+    margin-top: 25px;
+    background: rgba(255,105,180,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    color: #ffb6c1;
+    font-size: 0.95rem;
+    border-left: 4px solid #ff69b4;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+#successModal .warning-message i {
+    color: #ff69b4;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 500px) {
+    #successModal .modal-content {
+        padding: 25px 20px;
+    }
+    
+    #successModal .url-container {
+        gap: 8px;
+    }
+    
+    #successModal .url-input {
+        min-width: 180px;
+        padding: 10px 12px;
+    }
+    
+    #successModal .btn-copy {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+    
+    #successModal .warning-message {
+        padding: 12px;
+        font-size: 0.85rem;
+        gap: 8px;
+    }
+}
+
+/* Tombol kembali */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 50px;
+    padding: 8px 20px;
+    color: #ffb6c1;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: 0.3s;
+    box-shadow: 0 0 10px #ff69b4;
+}
+
+.back-button:hover {
+    background: rgba(255,105,180,0.2);
+    color: #ff1493;
+    border-color: #ff1493;
+    box-shadow: 0 0 20px #ff1493;
+}
+
+.dashboard-image {
+    margin-bottom: 30px;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255,105,180,0.5);
+    border: 1px solid rgba(255,105,180,0.5);
+    background: rgba(255,105,180,0.1);
+    backdrop-filter: blur(5px);
+}
+
+.dashboard-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 30px;
 }

@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="config.js"></script>
+    <link rel="stylesheet" href="donasi/css/donasi.css">
 </head>
 <body>
     <div id="particles"></div>
@@ -17,7 +17,7 @@
                 <div class="logo-icon"><i class="fas fa-crown"></i></div>
                 <div class="logo-text">
                     <h1>KEI ASSISTENT</h1>
-                    <p>pink neon · dokumentasi api</p>
+                    <p>pink neon · dukung kami</p>
                 </div>
             </div>
             <div class="nav-links">
@@ -29,19 +29,88 @@
             </div>
         </header>
 
-<<div class="dashboard-image">
-    <img src="image.jpg" alt="Dashboard">
-</div>
-
-        <div style="text-align: center; padding: 50px; color: #ffb6c1;">
-            <h2>Donasi Page (Coming Soon)</h2>
+        <div class="dashboard-image">
+            <img src="image.jpg" alt="Dashboard">
         </div>
 
-        <footer>© 2025 KEI ASSISTENT</footer>
+        <!-- Card Donasi -->
+        <div class="donasi-card">
+            <div class="donasi-header">
+                <i class="fas fa-heart"></i>
+                <h2>Dukung KEI ASSISTENT</h2>
+                <p>Pilih nominal atau masukkan sendiri</p>
+            </div>
+
+            <div class="donasi-form">
+                <!-- 5 tombol nominal cepat -->
+                <div class="quick-amount-container">
+                    <button class="quick-amount-btn" data-amount="2000">Rp2.000</button>
+                    <button class="quick-amount-btn" data-amount="4000">Rp4.000</button>
+                    <button class="quick-amount-btn" data-amount="6000">Rp6.000</button>
+                    <button class="quick-amount-btn" data-amount="8000">Rp8.000</button>
+                    <button class="quick-amount-btn" data-amount="10000">Rp10.000</button>
+                </div>
+
+                <!-- Tombol input manual -->
+                <div class="custom-amount-wrapper">
+                    <button class="custom-amount-toggle" id="customAmountToggle">
+                        <i class="fas fa-pencil-alt"></i> Input Nominal Sendiri
+                    </button>
+                    <div class="custom-amount-dropdown" id="customAmountDropdown">
+                        <input type="number" id="customAmountInput" placeholder="Min Rp230" min="230" step="100">
+                        <button class="apply-custom" id="applyCustomAmount">Gunakan</button>
+                    </div>
+                </div>
+
+                <!-- Hidden input untuk menyimpan nominal -->
+                <input type="hidden" id="amount" value="10000">
+
+                <!-- Tombol Buat QRIS -->
+                <button class="btn-donasi" id="payBtn">
+                    <i class="fas fa-qrcode"></i> Buat QRIS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QRIS -->
+    <div id="qrisModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-modal" id="closeQrisModal">&times;</button>
+            <h2 style="color: #ffb6c1; text-align: center;">Scan QRIS</h2>
+            <div style="text-align: center; margin: 15px 0;">
+                <img id="qrisImage" src="" alt="QRIS" style="max-width: 100%; border-radius: 20px;">
+            </div>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                <a id="downloadQrisBtn" href="#" download="qris.png" class="btn-copy" style="text-decoration: none;">Download QR</a>
+            </div>
+
+            <!-- Tombol Cek Status dan Batalkan -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn-check-status" id="checkStatusBtn">
+                    <i class="fas fa-sync-alt"></i> Cek Status
+                </button>
+                <button class="btn-cancel" id="cancelBtn">
+                    <i class="fas fa-ban"></i> Batalkan Transaksi
+                </button>
+            </div>
+
+            <!-- Area Status (hasil pengecekan) -->
+            <div id="statusArea"></div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay untuk efek pengecekan -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Mengecek Pembayaran...</p>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jnicol/particleground/jquery.particleground.min.js"></script>
     <script src="script.js"></script>
+    <script src="donasi/js/donasi.js"></script>
 </body>
 </html>
