@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     const loadingText = document.getElementById('loadingText');
     const localLoading = document.getElementById('localLoading');
+    
+    // Modal konfirmasi
+    const cancelModal = document.getElementById('cancelModal');
+    const confirmYes = document.getElementById('confirmCancelYes');
+    const confirmNo = document.getElementById('confirmCancelNo');
 
     // Ambil data dari localStorage
     const lobbyData = JSON.parse(localStorage.getItem('lobbyQris'));
@@ -54,7 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     localLoading.style.display = 'none';
                     qrisImage.src = qrApiUrl;
                     qrisImage.style.display = 'inline';
-                    downloadQrisBtn.href = qrApiUrl; // URL gambar untuk download
+                    // Simpan URL untuk keperluan download
+                    downloadQrisBtn.dataset.qrUrl = qrApiUrl;
                 }, 1500);
             } else {
                 alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
@@ -68,6 +74,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     createQris();
+
+    // Fungsi download QR (menggunakan fetch blob agar benar-benar mendownload file)
+    async function downloadQR(url) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'qris.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            alert('Gagal mendownload QR: ' + err.message);
+        }
+    }
+
+    downloadQrisBtn.addEventListener('click', function() {
+        const qrUrl = this.dataset.qrUrl;
+        if (qrUrl) {
+            downloadQR(qrUrl);
+        } else {
+            alert('QR belum tersedia');
+        }
+    });
 
     // Cek status (manual)
     checkStatusBtn.addEventListener('click', async function() {
@@ -132,10 +165,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Batalkan transaksi dengan modal custom
     cancelBtn.addEventListener('click', function() {
-        if (confirm('Batalkan transaksi ini?')) {
-            localStorage.removeItem('lobbyQris');
-            window.location.href = '../donasi.html';
+        cancelModal.classList.add('show');
+    });
+
+    confirmYes.addEventListener('click', function() {
+        cancelModal.classList.remove('show');
+        localStorage.removeItem('lobbyQris');
+        window.location.href = '../donasi.html';
+    });
+
+    confirmNo.addEventListener('click', function() {
+        cancelModal.classList.remove('show');
+    });
+
+    // Tutup modal jika klik di luar
+    window.addEventListener('click', function(e) {
+        if (e.target === cancelModal) {
+            cancelModal.classList.remove('show');
         }
     });
 
