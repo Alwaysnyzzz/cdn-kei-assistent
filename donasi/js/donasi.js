@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Cek apakah ada data pending dari halaman nominal
+    // Cek pending nominal dari halaman nominal
     const pendingData = localStorage.getItem('pendingNominal');
     if (pendingData) {
         const data = JSON.parse(pendingData);
@@ -83,8 +83,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok && data.success) {
                 const payment = data.payment;
-                // Redirect ke lobby dengan parameter id transaksi
-                window.location.href = `lobbyqris/lobbyqris.html?id=${payment.transactionId}`;
+                const qrString = payment.payment_number;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
+                const expiry = Date.now() + 10 * 60 * 1000;
+
+                // Simpan data transaksi ke localStorage
+                const transactionData = {
+                    id: selectedOrderId,
+                    amount: selectedAmount,
+                    qr_url: qrApiUrl,
+                    expiry: expiry
+                };
+                localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
+
+                // Redirect ke lobby dengan ID
+                window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
                 alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
             }

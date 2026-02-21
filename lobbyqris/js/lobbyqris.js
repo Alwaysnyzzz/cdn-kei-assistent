@@ -23,37 +23,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (transactionIdSpan) transactionIdSpan.textContent = transactionId;
 
-    let amount = null;
-    let orderId = transactionId;
-
-    async function loadTransaction() {
-        loadingText.textContent = 'Memuat data transaksi...';
-        loadingOverlay.classList.add('show');
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/get-transaction?id=${transactionId}`);
-            const data = await response.json();
-            loadingOverlay.classList.remove('show');
-
-            if (response.ok && data.success) {
-                const tx = data.transaction;
-                amount = tx.amount;
-                orderId = tx.id;
-
-                qrisImage.src = tx.qr_url;
-                qrisImage.style.display = 'inline';
-                downloadQrisBtn.dataset.qrUrl = tx.qr_url;
-                startTimer(tx.expiry);
-            } else {
-                alert('Transaksi tidak ditemukan. Kembali ke donasi.');
-                window.location.href = '../donasi.html';
-            }
-        } catch (err) {
-            loadingOverlay.classList.remove('show');
-            alert('Error memuat transaksi: ' + err.message);
-            window.location.href = '../donasi.html';
-        }
+    // Ambil data dari localStorage
+    const storedData = localStorage.getItem(`lobbyQris_${transactionId}`);
+    if (!storedData) {
+        alert('Data transaksi tidak ditemukan. Kembali ke donasi.');
+        window.location.href = '../donasi.html';
+        return;
     }
+
+    const transaction = JSON.parse(storedData);
+    const amount = transaction.amount;
+    const orderId = transaction.id;
+
+    // Tampilkan QR
+    qrisImage.src = transaction.qr_url;
+    qrisImage.style.display = 'inline';
+    downloadQrisBtn.dataset.qrUrl = transaction.qr_url;
+    startTimer(transaction.expiry);
 
     function startTimer(expiryTimestamp) {
         const updateTimer = () => {
@@ -65,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkStatusBtn.disabled = true;
                 cancelBtn.disabled = true;
                 downloadQrisBtn.disabled = true;
+                localStorage.removeItem(`lobbyQris_${transactionId}`);
                 return true;
             }
             const minutes = Math.floor(diff / 60000);
@@ -79,8 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    loadTransaction();
-
+    // Download QR
     async function downloadQR(url) {
         try {
             const response = await fetch(url);
@@ -104,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else alert('QR belum tersedia');
     });
 
+    // Cek status transaksi (tetap ke backend)
     checkStatusBtn.addEventListener('click', async function() {
         loadingText.textContent = 'Mengecek Pembayaran...';
         loadingOverlay.classList.add('show');
@@ -149,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Batalkan transaksi (hapus data localStorage)
     const cancelModal = document.getElementById('cancelModal');
     const confirmYes = document.getElementById('confirmCancelYes');
     const confirmNo = document.getElementById('confirmCancelNo');
@@ -157,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     confirmYes.addEventListener('click', () => {
         cancelModal.classList.remove('show');
+        localStorage.removeItem(`lobbyQris_${transactionId}`);
         window.location.href = '../donasi.html';
     });
 
