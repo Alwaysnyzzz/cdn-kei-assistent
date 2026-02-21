@@ -4,14 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileName = document.getElementById('fileName');
     const uploadBtn = document.getElementById('uploadBtn');
     const loading = document.getElementById('loading');
-    const resultArea = document.getElementById('resultArea');
-    const fileUrl = document.getElementById('fileUrl');
-    const copyBtn = document.getElementById('copyBtn');
     const modal = document.getElementById('uploadModal');
     const closeModal = document.getElementById('closeModal');
     const modalUploadBtn = document.getElementById('modalUploadBtn');
 
-    // Modal sukses
     const successModal = document.getElementById('successModal');
     const closeSuccessModal = document.getElementById('closeSuccessModal');
     const successUrl = document.getElementById('successUrl');
@@ -40,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!selectedFile) return;
 
         loading.classList.add('show');
-        resultArea.style.display = 'none';
         uploadBtn.disabled = true;
 
         const formData = new FormData();
@@ -54,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok && data.url) {
-                // Sukses: tampilkan modal sukses
                 successUrl.value = data.url;
                 successModal.classList.add('show');
             } else {
@@ -68,28 +62,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Copy dari modal sukses
     copySuccessBtn.addEventListener('click', function() {
         successUrl.select();
-        navigator.clipboard.writeText(successUrl.value).then(() => {
-            //alert('Link disalin!');
-        });
+        navigator.clipboard.writeText(successUrl.value);
+        // alert dihapus
     });
 
-    // Tutup modal sukses
     closeSuccessModal.addEventListener('click', () => successModal.classList.remove('show'));
     window.addEventListener('click', (e) => {
-        if (e.target === successModal) {
-            successModal.classList.remove('show');
-        }
-    });
-
-    // Copy dari hasil area (jika masih ada)
-    copyBtn.addEventListener('click', function() {
-        fileUrl.select();
-        navigator.clipboard.writeText(fileUrl.value).then(() => {
-            alert('Link disalin!');
-        });
+        if (e.target === successModal) successModal.classList.remove('show');
     });
 
     closeModal.addEventListener('click', () => modal.classList.remove('show'));

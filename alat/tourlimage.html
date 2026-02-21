@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="css/tourlimage.css">
-    <script src="../config.js"></script>
 </head>
 <body>
     <div id="particles"></div>
@@ -58,20 +57,10 @@
                 <div class="spinner"></div>
                 <span>Mengupload...</span>
             </div>
-
-            <div class="result-area" id="resultArea" style="display: none;">
-                <p class="result-label">Link Gambar:</p>
-                <div class="url-container">
-                    <input type="text" class="url-input" id="fileUrl" readonly>
-                    <button class="btn-copy" id="copyBtn">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Modal Upload (pilih file) -->
+    <!-- Modal Upload -->
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <button class="close-modal" id="closeModal">&times;</button>
@@ -85,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Modal Sukses Upload -->
+    <!-- Modal Sukses -->
     <div id="successModal" class="modal">
         <div class="modal-content" style="max-width: 500px; text-align: center;">
             <button class="close-modal" id="closeSuccessModal">&times;</button>
