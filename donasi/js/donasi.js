@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    alert('Halaman donasi dimuat');
     const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI DENGAN URL VERCEL ANDA
 
     const payBtn = document.getElementById('payBtn');
-    alert('Tombol Buat QRIS ditemukan: ' + (payBtn ? 'ya' : 'tidak'));
-
     const amountInput = document.getElementById('amount');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
     const customAmountInput = document.getElementById('customAmount');
@@ -18,15 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cek pending nominal dari halaman nominal
     const pendingData = localStorage.getItem('pendingNominal');
     if (pendingData) {
-        const data = JSON.parse(pendingData);
-        selectedAmount = data.amount;
-        selectedOrderId = data.orderId;
-        selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
-        selectedAmountDisplay.style.display = 'block';
-        payBtn.disabled = false;
-        localStorage.removeItem('pendingNominal');
-        quickAmountBtns.forEach(b => b.classList.remove('active'));
-        alert('Nominal dari input manual siap, silakan klik Buat QRIS');
+        try {
+            const data = JSON.parse(pendingData);
+            selectedAmount = data.amount;
+            selectedOrderId = data.orderId;
+            selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
+            selectedAmountDisplay.style.display = 'block';
+            payBtn.disabled = false;
+            localStorage.removeItem('pendingNominal');
+            quickAmountBtns.forEach(b => b.classList.remove('active'));
+        } catch (e) {}
     }
 
     quickAmountBtns.forEach(btn => {
@@ -38,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
             selectedAmountDisplay.style.display = 'block';
             payBtn.disabled = false;
-            alert('Nominal dipilih: ' + selectedAmount + ', Order ID: ' + selectedOrderId);
         });
     });
 
@@ -52,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedAmountDisplay.style.display = 'block';
             payBtn.disabled = false;
             quickAmountBtns.forEach(b => b.classList.remove('active'));
-            alert('Nominal manual: ' + selectedAmount + ', Order ID: ' + selectedOrderId);
         }
     });
 
@@ -74,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
-        alert('Tombol Buat QRIS diklik');
         if (!selectedAmount || !selectedOrderId) {
             alert('Pilih nominal terlebih dahulu');
             return;
@@ -83,17 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
         payBtn.disabled = true;
         payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-        alert('Mengirim request ke backend... Order ID: ' + selectedOrderId);
-
         try {
             const response = await fetch(`${API_BASE_URL}/create-qris`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: selectedAmount, orderId: selectedOrderId })
             });
-            alert('Response status: ' + response.status);
             const data = await response.json();
-            alert('Respons dari backend: ' + JSON.stringify(data));
 
             if (response.ok && data.success) {
                 const payment = data.payment;
@@ -108,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     expiry: expiry
                 };
                 localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
-                alert('Data disimpan di localStorage, redirecting...');
 
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {

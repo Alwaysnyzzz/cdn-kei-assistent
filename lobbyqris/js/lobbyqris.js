@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (transactionIdSpan) transactionIdSpan.textContent = transactionId;
 
-    // Ambil data dari localStorage
     const storedData = localStorage.getItem(`lobbyQris_${transactionId}`);
     if (!storedData) {
         alert('Data transaksi tidak ditemukan. Kembali ke donasi.');
@@ -66,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    // Download QR
     async function downloadQR(url) {
         try {
             const response = await fetch(url);
@@ -90,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
         else alert('QR belum tersedia');
     });
 
-    // Cek status transaksi (tetap ke backend)
     checkStatusBtn.addEventListener('click', async function() {
         loadingText.textContent = 'Mengecek Pembayaran...';
         loadingOverlay.classList.add('show');
@@ -136,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Batalkan transaksi (hapus data localStorage)
     const cancelModal = document.getElementById('cancelModal');
     const confirmYes = document.getElementById('confirmCancelYes');
     const confirmNo = document.getElementById('confirmCancelNo');
