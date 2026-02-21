@@ -1,154 +1,103 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI DENGAN URL VERCEL ANDA
+    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api';
 
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
 
     if (!transactionId) {
-        alert('ID transaksi tidak ditemukan. Kembali ke donasi.');
+        alert('ID transaksi tidak ditemukan');
         window.location.href = '../donasi.html';
         return;
     }
 
-    const qrisImage = document.getElementById('qrisImage');
-    const downloadQrisBtn = document.getElementById('downloadQrisBtn');
-    const checkStatusBtn = document.getElementById('checkStatusBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const statusArea = document.getElementById('statusArea');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const loadingText = document.getElementById('loadingText');
-    const localLoading = document.getElementById('localLoading');
-    const timerElement = document.getElementById('timer');
-    const transactionIdSpan = document.getElementById('transactionId');
-
-    if (transactionIdSpan) transactionIdSpan.textContent = transactionId;
-
-    const storedData = localStorage.getItem(`lobbyQris_${transactionId}`);
-    if (!storedData) {
-        alert('Data transaksi tidak ditemukan. Kembali ke donasi.');
+    const stored = localStorage.getItem(`lobbyQris_${transactionId}`);
+    if (!stored) {
+        alert('Data transaksi tidak ditemukan');
         window.location.href = '../donasi.html';
         return;
     }
 
-    const transaction = JSON.parse(storedData);
-    const amount = transaction.amount;
-    const orderId = transaction.id;
+    const data = JSON.parse(stored);
+    const amount = data.amount;
+    const orderId = data.id;
 
-    // Tampilkan QR
-    qrisImage.src = transaction.qr_url;
-    qrisImage.style.display = 'inline';
-    downloadQrisBtn.dataset.qrUrl = transaction.qr_url;
-    startTimer(transaction.expiry);
+    document.getElementById('qrisImage').src = data.qr_url;
+    document.getElementById('qrisImage').style.display = 'inline';
+    document.getElementById('downloadQrisBtn').dataset.qrUrl = data.qr_url;
+    document.getElementById('transactionId').textContent = transactionId;
 
-    function startTimer(expiryTimestamp) {
-        const updateTimer = () => {
-            const now = Date.now();
-            const diff = expiryTimestamp - now;
+    function startTimer(expiry) {
+        const timer = document.getElementById('timer');
+        const update = () => {
+            const diff = expiry - Date.now();
             if (diff <= 0) {
-                timerElement.textContent = 'Kadaluarsa';
-                statusArea.innerHTML = '<p style="color:#ff69b4; text-align:center;">QRIS telah kadaluarsa. Silakan buat transaksi baru.</p>';
-                checkStatusBtn.disabled = true;
-                cancelBtn.disabled = true;
-                downloadQrisBtn.disabled = true;
-                localStorage.removeItem(`lobbyQris_${transactionId}`);
+                timer.textContent = 'Kadaluarsa';
                 return true;
             }
-            const minutes = Math.floor(diff / 60000);
-            const seconds = Math.floor((diff % 60000) / 1000);
-            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const min = Math.floor(diff / 60000);
+            const det = Math.floor((diff % 60000) / 1000);
+            timer.textContent = `${min.toString().padStart(2,'0')}:${det.toString().padStart(2,'0')}`;
             return false;
         };
-
-        updateTimer();
-        const interval = setInterval(() => {
-            if (updateTimer()) clearInterval(interval);
-        }, 1000);
+        update();
+        setInterval(update, 1000);
     }
+    startTimer(data.expiry);
 
-    async function downloadQR(url) {
-        try {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const blobUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = 'qris.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
-        } catch (err) {
-            alert('Gagal mendownload QR: ' + err.message);
-        }
-    }
-
-    downloadQrisBtn.addEventListener('click', function() {
-        const qrUrl = this.dataset.qrUrl;
-        if (qrUrl) downloadQR(qrUrl);
-        else alert('QR belum tersedia');
+    // Download
+    document.getElementById('downloadQrisBtn').addEventListener('click', async function() {
+        const url = this.dataset.qrUrl;
+        if (!url) return;
+        const blob = await fetch(url).then(r => r.blob());
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'qris.png';
+        a.click();
     });
 
-    checkStatusBtn.addEventListener('click', async function() {
-        loadingText.textContent = 'Mengecek Pembayaran...';
-        loadingOverlay.classList.add('show');
-        statusArea.innerHTML = '';
+    // Cek status
+    document.getElementById('checkStatusBtn').addEventListener('click', async function() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('show');
+        document.getElementById('statusArea').innerHTML = '';
 
         try {
-            const response = await fetch(`${API_BASE_URL}/check-status`, {
+            const res = await fetch(`${API_BASE_URL}/check-status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount, orderId })
             });
-            const data = await response.json();
-            loadingOverlay.classList.remove('show');
+            const data = await res.json();
+            overlay.classList.remove('show');
 
-            if (response.ok && data.success) {
+            if (res.ok && data.success) {
                 const tx = data.transaction;
-                if (tx.status === 'success' || tx.status === 'paid') {
-                    statusArea.innerHTML = `
-                        <div class="status-success">
-                            <div class="success-circle animated-pulse">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <h3>Pembayaran Sukses!</h3>
-                            <div class="transaction-details">
-                                <p><strong>ID Transaksi:</strong> ${orderId}</p>
-                                <p><strong>Jumlah:</strong> Rp ${amount.toLocaleString()}</p>
-                                <p><strong>Status:</strong> Sukses</p>
-                                <p><strong>Waktu:</strong> ${new Date().toLocaleString()}</p>
-                            </div>
-                        </div>
-                    `;
-                } else if (tx.status === 'pending' || tx.status === 'waiting') {
-                    statusArea.innerHTML = `<p style="color:#ffccdd;">Pembayaran masih dalam antrian.</p>`;
+                if (tx.status === 'success') {
+                    document.getElementById('statusArea').innerHTML = '<p>✅ Sukses</p>';
+                } else if (tx.status === 'pending') {
+                    document.getElementById('statusArea').innerHTML = '<p>⏳ Menunggu</p>';
                 } else {
-                    statusArea.innerHTML = `<p style="color:#ff69b4;">Status: ${tx.status}</p>`;
+                    document.getElementById('statusArea').innerHTML = '<p>❌ Gagal</p>';
                 }
             } else {
-                statusArea.innerHTML = `<p style="color:#ff69b4;">Transaksi tidak ditemukan.</p>`;
+                document.getElementById('statusArea').innerHTML = '<p>Transaksi tidak ditemukan</p>';
             }
         } catch (err) {
-            loadingOverlay.classList.remove('show');
-            statusArea.innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
+            overlay.classList.remove('show');
+            alert(err.message);
         }
     });
 
-    const cancelModal = document.getElementById('cancelModal');
-    const confirmYes = document.getElementById('confirmCancelYes');
-    const confirmNo = document.getElementById('confirmCancelNo');
-
-    cancelBtn.addEventListener('click', () => cancelModal.classList.add('show'));
-
-    confirmYes.addEventListener('click', () => {
-        cancelModal.classList.remove('show');
+    // Batalkan
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        document.getElementById('cancelModal').classList.add('show');
+    });
+    document.getElementById('confirmCancelYes').addEventListener('click', function() {
         localStorage.removeItem(`lobbyQris_${transactionId}`);
         window.location.href = '../donasi.html';
     });
-
-    confirmNo.addEventListener('click', () => cancelModal.classList.remove('show'));
-
-    window.addEventListener('click', (e) => {
-        if (e.target === cancelModal) cancelModal.classList.remove('show');
+    document.getElementById('confirmCancelNo').addEventListener('click', function() {
+        document.getElementById('cancelModal').classList.remove('show');
     });
 
     particleground(document.getElementById('particles'), {

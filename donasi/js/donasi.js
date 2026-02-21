@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI DENGAN URL VERCEL ANDA
+    // ===== KONFIGURASI =====
+    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api';
 
+    // ===== ELEMEN DOM =====
     const payBtn = document.getElementById('payBtn');
-    const amountInput = document.getElementById('amount');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
     const customAmountInput = document.getElementById('customAmount');
     const applyCustomBtn = document.getElementById('applyCustomAmount');
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Cek pending nominal dari halaman nominal
+    // Cek jika ada data dari halaman input manual
     const pendingData = localStorage.getItem('pendingNominal');
     if (pendingData) {
         try {
@@ -23,14 +24,23 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedAmountDisplay.style.display = 'block';
             payBtn.disabled = false;
             localStorage.removeItem('pendingNominal');
-            quickAmountBtns.forEach(b => b.classList.remove('active'));
-        } catch (e) {}
+        } catch (e) {
+            console.error('Gagal parse pendingNominal', e);
+        }
     }
 
+    // Fungsi untuk generate Order ID
+    function generateOrderId() {
+        return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
+    }
+
+    // Tombol nominal cepat
     quickAmountBtns.forEach(btn => {
         btn.addEventListener('click', function() {
+            // Hapus class active dari semua
             quickAmountBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+
             selectedAmount = parseInt(this.dataset.amount);
             selectedOrderId = generateOrderId();
             selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
@@ -39,39 +49,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Tombol input manual
     applyCustomBtn.addEventListener('click', function() {
         const customAmount = parseInt(customAmountInput.value);
-        if (validateAmount(customAmount)) {
-            selectedAmount = customAmount;
-            selectedOrderId = generateOrderId();
-            amountInput.value = customAmount;
-            selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
-            selectedAmountDisplay.style.display = 'block';
-            payBtn.disabled = false;
-            quickAmountBtns.forEach(b => b.classList.remove('active'));
+        if (isNaN(customAmount) || customAmount < 230) {
+            alert('Minimal Rp 230');
+            return;
         }
+        selectedAmount = customAmount;
+        selectedOrderId = generateOrderId();
+        selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
+        selectedAmountDisplay.style.display = 'block';
+        payBtn.disabled = false;
+        quickAmountBtns.forEach(b => b.classList.remove('active'));
     });
 
-    function validateAmount(amount) {
-        const minAmount = 230;
-        if (isNaN(amount) || amount < minAmount) {
-            alert(`Minimal Rp ${minAmount.toLocaleString()}`);
-            return false;
-        }
-        return true;
-    }
-
-    function generateOrderId() {
-        const prefix = 'DON';
-        const timestamp = Date.now().toString(36).toUpperCase();
-        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-        return `${prefix}-${timestamp}${random}`;
-    }
-
+    // Tombol Buat QRIS
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+
         if (!selectedAmount || !selectedOrderId) {
-            alert('Pilih nominal terlebih dahulu');
+            alert('Pilih nominal terlebih dahulu!');
             return;
         }
 
@@ -79,43 +77,52 @@ document.addEventListener('DOMContentLoaded', function() {
         payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
         try {
+            console.log('Mengirim request ke:', API_BASE_URL + '/create-qris');
             const response = await fetch(`${API_BASE_URL}/create-qris`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: selectedAmount, orderId: selectedOrderId })
             });
+
             const data = await response.json();
+            console.log('Respons dari server:', data);
 
             if (response.ok && data.success) {
                 const payment = data.payment;
-                const qrString = payment.payment_number;
-                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(payment.payment_number)}`;
                 const expiry = Date.now() + 10 * 60 * 1000;
 
-                const transactionData = {
+                // Simpan ke localStorage
+                localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify({
                     id: selectedOrderId,
                     amount: selectedAmount,
                     qr_url: qrApiUrl,
                     expiry: expiry
-                };
-                localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
+                }));
 
+                console.log('Data tersimpan, redirect ke lobby...');
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
-                alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
+                alert('Gagal membuat QRIS: ' + (data.error || 'Respons tidak valid'));
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
             }
         } catch (err) {
-            alert('Error: ' + err.message);
+            console.error('Fetch error:', err);
+            alert('Terjadi kesalahan koneksi. Periksa console untuk detail.');
             payBtn.disabled = false;
             payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
         }
     });
 
-    particleground(document.getElementById('particles'), {
-        dotColor: '#ffb6c1',
-        lineColor: '#ff69b4',
-        density: 12000
-    });
+    // Inisialisasi particles
+    if (typeof particleground !== 'undefined') {
+        particleground(document.getElementById('particles'), {
+            dotColor: '#ffb6c1',
+            lineColor: '#ff69b4',
+            density: 12000
+        });
+    } else {
+        console.warn('particleground tidak ditemukan');
+    }
 });
