@@ -35,24 +35,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             loadingOverlay.classList.remove('show');
 
-            // ===== TAMBAHKAN CONSOLE.LOG UNTUK DEBUG =====
             console.log('Response from API:', data);
-            console.log('QR URL:', data.payment?.qr_url);
-            // =============================================
+            console.log('Payment number:', data.payment?.payment_number);
 
             if (response.ok && data.success) {
                 const payment = data.payment;
+                const qrString = payment.payment_number; // string data QRIS
+
                 // Tampilkan loading lokal
                 qrisImage.style.display = 'none';
                 localLoading.style.display = 'flex';
 
-                // Tunggu 1,5 detik lalu tampilkan QRIS
-                setTimeout(() => {
-                    localLoading.style.display = 'none';
-                    qrisImage.src = payment.qr_url;
-                    qrisImage.style.display = 'inline';
-                    downloadQrisBtn.href = payment.qr_url;
-                }, 1500);
+                // Generate QR code dari string
+                QRCode.toDataURL(qrString, { width: 300 }, function(err, url) {
+                    if (err) {
+                        console.error('Gagal generate QR:', err);
+                        alert('Gagal membuat QR code');
+                        window.location.href = '../donasi.html';
+                        return;
+                    }
+                    // Tunggu 1,5 detik lalu tampilkan QR
+                    setTimeout(() => {
+                        localLoading.style.display = 'none';
+                        qrisImage.src = url;
+                        qrisImage.style.display = 'inline';
+                        downloadQrisBtn.href = url;
+                    }, 1500);
+                });
             } else {
                 alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
                 window.location.href = '../donasi.html';
