@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadBtn.disabled = true;
 
         const formData = new FormData();
-        formData.append('fileToUpload', selectedFile);
+        formData.append('file', selectedFile);
         formData.append('reqtype', 'fileupload');
         formData.append('userhash', '');
 
