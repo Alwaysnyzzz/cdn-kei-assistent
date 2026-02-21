@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ===== KONFIGURASI (PASTIKAN URL INI BENAR) =====
-    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api';
+    // Ambil konfigurasi dari window (jika ada)
+    const config = window.DONASI_CONFIG || {};
+    const API_BASE_URL = config.API_BASE_URL || 'https://vercel-upload-jet.vercel.app/api';
+    const MIN_AMOUNT = 500; // Minimal dari Pakasir adalah Rp 500
 
-    // ===== ELEMEN =====
     const payBtn = document.getElementById('payBtn');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
     const customAmountInput = document.getElementById('customAmount');
@@ -13,16 +14,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
+    // Set placeholder dan min input manual sesuai minimal
+    if (customAmountInput) {
+        customAmountInput.min = MIN_AMOUNT;
+        customAmountInput.placeholder = `Min ${MIN_AMOUNT.toLocaleString()}`;
+    }
+
     function generateOrderId() {
         return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
     }
 
-    // Tombol nominal cepat
     quickAmountBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             quickAmountBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-
             selectedAmount = parseInt(this.dataset.amount);
             selectedOrderId = generateOrderId();
             selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
@@ -31,11 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Input manual
     applyCustomBtn.addEventListener('click', function() {
         const customAmount = parseInt(customAmountInput.value);
-        if (isNaN(customAmount) || customAmount < 230) {
-            alert('Minimal Rp 230');
+        if (isNaN(customAmount) || customAmount < MIN_AMOUNT) {
+            alert(`Minimal Rp ${MIN_AMOUNT.toLocaleString()}`);
             return;
         }
         selectedAmount = customAmount;
@@ -46,10 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
         quickAmountBtns.forEach(b => b.classList.remove('active'));
     });
 
-    // Tombol Buat QRIS
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
-
         if (!selectedAmount || !selectedOrderId) {
             alert('Pilih nominal dulu');
             return;
@@ -79,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     expiry: expiry
                 }));
 
-                // PASTIKAN REDIRECT KE FOLDER YANG BENAR
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
                 alert('Gagal: ' + (data.error || 'Respons tidak valid'));

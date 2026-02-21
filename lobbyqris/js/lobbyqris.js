@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             }
             const min = Math.floor(diff / 60000);
-            const det = Math.floor((diff % 60000) / 1000);
-            timer.textContent = `${min.toString().padStart(2,'0')}:${det.toString().padStart(2,'0')}`;
+            const sec = Math.floor((diff % 60000) / 1000);
+            timer.textContent = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
             return false;
         };
         update();
@@ -105,9 +105,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    particleground(document.getElementById('particles'), {
-        dotColor: '#ffb6c1',
-        lineColor: '#ff69b4',
-        density: 12000
-    });
+    if (typeof particleground !== 'undefined') {
+        particleground(document.getElementById('particles'), {
+            dotColor: '#ffb6c1',
+            lineColor: '#ff69b4',
+            density: 12000
+        });
+    }
 });
