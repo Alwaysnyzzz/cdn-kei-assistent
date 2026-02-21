@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     copySuccessBtn.addEventListener('click', function() {
         successUrl.select();
         navigator.clipboard.writeText(successUrl.value).then(() => {
-            alert('Link disalin!');
+            //alert('Link disalin!');
         });
     });
 
