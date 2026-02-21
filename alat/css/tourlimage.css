@@ -262,3 +262,37 @@
         box-shadow: 0 0 20px #28a745;
     }
 }
+
+/* Perbaikan modal sukses (centang lebih besar, tombol rapi) */
+#successModal .modal-content {
+    max-width: 500px;
+    width: 90%;
+    padding: 30px;
+}
+
+#successModal .success-circle {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 25px;
+}
+
+#successModal .success-circle i {
+    font-size: 4rem;
+}
+
+#successModal .url-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#successModal .url-input {
+    flex: 1;
+    min-width: 0; /* mencegah input meluber */
+}
+
+#successModal .btn-copy {
+    white-space: nowrap;
+    padding: 12px 25px;
+}
