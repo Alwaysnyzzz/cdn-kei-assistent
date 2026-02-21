@@ -46,22 +46,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 qrisImage.style.display = 'none';
                 localLoading.style.display = 'flex';
 
-                // Generate QR code dari string
-                QRCode.toDataURL(qrString, { width: 300 }, function(err, url) {
-                    if (err) {
-                        console.error('Gagal generate QR:', err);
-                        alert('Gagal membuat QR code');
-                        window.location.href = '../donasi.html';
-                        return;
-                    }
-                    // Tunggu 1,5 detik lalu tampilkan QR
-                    setTimeout(() => {
-                        localLoading.style.display = 'none';
-                        qrisImage.src = url;
-                        qrisImage.style.display = 'inline';
-                        downloadQrisBtn.href = url;
-                    }, 1500);
-                });
+                // Buat URL QR code menggunakan API eksternal
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
+
+                // Tunggu 1,5 detik lalu tampilkan QR
+                setTimeout(() => {
+                    localLoading.style.display = 'none';
+                    qrisImage.src = qrApiUrl;
+                    qrisImage.style.display = 'inline';
+                    downloadQrisBtn.href = qrApiUrl; // URL gambar untuk download
+                }, 1500);
             } else {
                 alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
                 window.location.href = '../donasi.html';
