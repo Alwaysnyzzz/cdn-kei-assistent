@@ -9,53 +9,31 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="css/tourlimage.css">
     <script src="../config.js"></script>
-    <style>
-        /* Tombol kembali hitam neon */
-        .back-button {
-            background: black;
-            border: 2px solid #ff69b4;
-            border-radius: 50px;
-            padding: 8px 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #ffb6c1;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 20px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px #ff69b4;
-        }
-        .back-button:hover {
-            background: rgba(255,105,180,0.2);
-            color: #ff1493;
-            border-color: #ff1493;
-            box-shadow: 0 0 20px #ff1493;
-        }
-        /* Sembunyikan header (logo dan menu) */
-        header {
-            display: none !important;
-        }
-        /* Atur ulang margin wrapper */
-        .wrapper {
-            padding-top: 20px;
-        }
-    </style>
 </head>
 <body>
     <div id="particles"></div>
     <div class="wrapper">
-        <!-- Tombol kembali ke halaman Alat -->
-        <a href="javascript:history.back()" class="back-button">
-            <i class="fas fa-arrow-left"></i> kembali
-        </a>
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                <div class="logo-text">
+                    <h1>KEI ASSISTENT</h1>
+                    <p>pink neon · tourl image</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../alat.html">Alat</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../product.html">Product</a>
+                <a href="../donasi.html">Donasi</a>
+            </div>
+        </header>
 
-        <!-- Gambar dashboard (dari root) -->
         <div class="dashboard-image">
             <img src="../image.jpg" alt="Dashboard">
         </div>
 
-        <!-- Card Upload (sama seperti sebelumnya) -->
         <div class="tourl-card">
             <div class="tourl-header">
                 <i class="fas fa-image"></i>
@@ -93,7 +71,7 @@
         </div>
     </div>
 
-    <!-- Modal untuk upload (tetap ada) -->
+    <!-- Modal Upload (pilih file) -->
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <button class="close-modal" id="closeModal">&times;</button>
@@ -103,6 +81,24 @@
                 <button class="btn-upload" id="modalUploadBtn">
                     <i class="fas fa-upload"></i> Pilih File
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sukses Upload -->
+    <div id="successModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <button class="close-modal" id="closeSuccessModal">&times;</button>
+            <div style="margin: 20px 0;">
+                <div class="success-circle animated-pulse">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2 style="color: #ffb6c1; margin: 20px 0 10px;">Upload Sukses!</h2>
+                <p style="color: #ffccdd; margin-bottom: 20px;">Link file siap digunakan:</p>
+                <div class="url-container" style="margin: 0 auto;">
+                    <input type="text" id="successUrl" class="url-input" readonly>
+                    <button class="btn-copy" id="copySuccessBtn"><i class="fas fa-copy"></i> Copy</button>
+                </div>
             </div>
         </div>
     </div>

@@ -135,6 +135,7 @@
 .url-container {
     display: flex;
     gap: 10px;
+    align-items: center;
 }
 
 .url-input {
@@ -161,6 +162,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
 }
 
 .btn-copy:hover {
@@ -168,6 +170,7 @@
     box-shadow: 0 0 25px #ff1493;
 }
 
+/* Modal styles */
 .modal {
     display: none;
     position: fixed;
@@ -195,7 +198,6 @@
     padding: 30px;
     position: relative;
     box-shadow: 0 0 50px #ff1493;
-    text-align: center;
 }
 
 .close-modal {
@@ -207,6 +209,8 @@
     color: #ff69b4;
     font-size: 2.5rem;
     cursor: pointer;
+    line-height: 1;
+    z-index: 10;
 }
 
 .close-modal:hover {
@@ -225,4 +229,36 @@
 
 .modal-button {
     margin-top: 20px;
+}
+
+/* Success circle with pulse animation */
+.success-circle {
+    background: #28a745;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 20px #28a745;
+}
+
+.animated-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #28a745;
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 40px #28a745;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #28a745;
+    }
 }

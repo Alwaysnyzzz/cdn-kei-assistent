@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal = document.getElementById('closeModal');
     const modalUploadBtn = document.getElementById('modalUploadBtn');
 
+    // Modal sukses
+    const successModal = document.getElementById('successModal');
+    const closeSuccessModal = document.getElementById('closeSuccessModal');
+    const successUrl = document.getElementById('successUrl');
+    const copySuccessBtn = document.getElementById('copySuccessBtn');
+
     let selectedFile = null;
 
     uploadArea.addEventListener('click', () => fileInput.click());
@@ -39,25 +45,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
         formData.append('file', selectedFile);
-        formData.append('reqtype', 'fileupload');
-        formData.append('userhash', '');
 
         try {
             const response = await fetch('https://vercel-upload-jet.vercel.app/api/upload', {
                 method: 'POST',
                 body: formData
             });
-            const link = await response.text();
+            const data = await response.json();
 
-            if (link && link.startsWith('https://')) {
-                fileUrl.value = link;
-                resultArea.style.display = 'block';
-                // Simpan ke localStorage (opsional)
-                let history = JSON.parse(localStorage.getItem('tourlHistory') || '[]');
-                history.push({ file: selectedFile.name, url: link, time: new Date().toISOString() });
-                localStorage.setItem('tourlHistory', JSON.stringify(history));
+            if (response.ok && data.url) {
+                // Sukses: tampilkan modal sukses
+                successUrl.value = data.url;
+                successModal.classList.add('show');
             } else {
-                alert('Gagal upload: ' + link);
+                alert('Gagal upload: ' + (data.error || JSON.stringify(data)));
             }
         } catch (err) {
             alert('Error: ' + err.message);
@@ -67,6 +68,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Copy dari modal sukses
+    copySuccessBtn.addEventListener('click', function() {
+        successUrl.select();
+        navigator.clipboard.writeText(successUrl.value).then(() => {
+            alert('Link disalin!');
+        });
+    });
+
+    // Tutup modal sukses
+    closeSuccessModal.addEventListener('click', () => successModal.classList.remove('show'));
+    window.addEventListener('click', (e) => {
+        if (e.target === successModal) {
+            successModal.classList.remove('show');
+        }
+    });
+
+    // Copy dari hasil area (jika masih ada)
     copyBtn.addEventListener('click', function() {
         fileUrl.select();
         navigator.clipboard.writeText(fileUrl.value).then(() => {
