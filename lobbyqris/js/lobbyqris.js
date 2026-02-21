@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmYes = document.getElementById('confirmCancelYes');
     const confirmNo = document.getElementById('confirmCancelNo');
 
+    // Ambil data dari localStorage
     const lobbyData = JSON.parse(localStorage.getItem('lobbyQris'));
     if (!lobbyData || !lobbyData.amount || !lobbyData.orderId) {
         alert('Data tidak ditemukan. Kembali ke halaman donasi.');
@@ -26,12 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let expiryTime = localStorage.getItem('qrisExpiry');
     let qrUrl = localStorage.getItem('qrisImageUrl');
 
+    // Fungsi untuk memulai timer dan langsung memperbarui tampilan
     function startTimer(expiryTimestamp) {
-        const interval = setInterval(() => {
+        // Fungsi untuk memperbarui tampilan timer
+        const updateTimer = () => {
             const now = Date.now();
             const diff = expiryTimestamp - now;
             if (diff <= 0) {
-                clearInterval(interval);
                 timerElement.textContent = 'Kadaluarsa';
                 statusArea.innerHTML = '<p style="color:#ff69b4; text-align:center;">QRIS telah kadaluarsa. Silakan buat transaksi baru.</p>';
                 checkStatusBtn.disabled = true;
@@ -40,68 +42,83 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.removeItem('lobbyQris');
                 localStorage.removeItem('qrisExpiry');
                 localStorage.removeItem('qrisImageUrl');
-                return;
+                return true; // menandakan sudah expired
             }
             const minutes = Math.floor(diff / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
             timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            return false;
+        };
+
+        // Update segera
+        const expired = updateTimer();
+        if (expired) return;
+
+        // Set interval untuk update setiap detik
+        const interval = setInterval(() => {
+            const expired = updateTimer();
+            if (expired) clearInterval(interval);
         }, 1000);
         return interval;
     }
 
+    // Jika QR masih valid, tampilkan langsung
     if (qrUrl && expiryTime && parseInt(expiryTime) > Date.now()) {
         qrisImage.src = qrUrl;
         qrisImage.style.display = 'inline';
         downloadQrisBtn.dataset.qrUrl = qrUrl;
         startTimer(parseInt(expiryTime));
-        return;
+        // Tombol sudah aktif secara default
     } else {
+        // Hapus data kadaluarsa
         localStorage.removeItem('lobbyQris');
         localStorage.removeItem('qrisExpiry');
         localStorage.removeItem('qrisImageUrl');
-    }
 
-    loadingText.textContent = 'Sedang membuat QRIS, mohon tunggu...';
-    loadingOverlay.classList.add('show');
+        // Buat QRIS baru
+        loadingText.textContent = 'Sedang membuat QRIS, mohon tunggu...';
+        loadingOverlay.classList.add('show');
 
-    async function createQris() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/create-qris`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, orderId })
-            });
-            const data = await response.json();
-            loadingOverlay.classList.remove('show');
+        async function createQris() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/create-qris`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, orderId })
+                });
+                const data = await response.json();
+                loadingOverlay.classList.remove('show');
 
-            if (response.ok && data.success) {
-                const payment = data.payment;
-                const qrString = payment.payment_number;
-                qrisImage.style.display = 'none';
-                localLoading.style.display = 'flex';
-                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
-                const expiry = Date.now() + 10 * 60 * 1000;
-                localStorage.setItem('qrisExpiry', expiry);
-                localStorage.setItem('qrisImageUrl', qrApiUrl);
-                setTimeout(() => {
-                    localLoading.style.display = 'none';
-                    qrisImage.src = qrApiUrl;
-                    qrisImage.style.display = 'inline';
-                    downloadQrisBtn.dataset.qrUrl = qrApiUrl;
-                    startTimer(expiry);
-                }, 1500);
-            } else {
-                const errorMsg = data.error || 'Unknown error';
-                window.location.href = `../error/error.html?code=${encodeURIComponent(errorMsg)}`;
+                if (response.ok && data.success) {
+                    const payment = data.payment;
+                    const qrString = payment.payment_number;
+                    qrisImage.style.display = 'none';
+                    localLoading.style.display = 'flex';
+                    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
+                    const expiry = Date.now() + 10 * 60 * 1000;
+                    localStorage.setItem('qrisExpiry', expiry);
+                    localStorage.setItem('qrisImageUrl', qrApiUrl);
+                    setTimeout(() => {
+                        localLoading.style.display = 'none';
+                        qrisImage.src = qrApiUrl;
+                        qrisImage.style.display = 'inline';
+                        downloadQrisBtn.dataset.qrUrl = qrApiUrl;
+                        startTimer(expiry);
+                    }, 1500);
+                } else {
+                    const errorMsg = data.error || 'Unknown error';
+                    window.location.href = `../error/error.html?code=${encodeURIComponent(errorMsg)}`;
+                }
+            } catch (err) {
+                loadingOverlay.classList.remove('show');
+                window.location.href = `../error/error.html?code=${encodeURIComponent(err.message)}`;
             }
-        } catch (err) {
-            loadingOverlay.classList.remove('show');
-            window.location.href = `../error/error.html?code=${encodeURIComponent(err.message)}`;
         }
+
+        createQris();
     }
 
-    createQris();
-
+    // Fungsi download QR
     async function downloadQR(url) {
         try {
             const response = await fetch(url);
@@ -125,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else alert('QR belum tersedia');
     });
 
+    // Cek status transaksi
     checkStatusBtn.addEventListener('click', async function() {
         loadingText.textContent = 'Mengecek Pembayaran...';
         loadingOverlay.classList.add('show');
@@ -187,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Batalkan transaksi
     cancelBtn.addEventListener('click', () => cancelModal.classList.add('show'));
 
     confirmYes.addEventListener('click', () => {

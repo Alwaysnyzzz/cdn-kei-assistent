@@ -1,7 +1,7 @@
 .qris-card {
     background: black;
     border: 2px solid #ff69b4;
-    border-radius: 30px; /* card tumpul */
+    border-radius: 30px;
     padding: 35px;
     max-width: 500px;
     margin: 40px auto;
@@ -9,7 +9,7 @@
 }
 
 #qrisImage {
-    border-radius: 0; /* QRIS lancip */
+    border-radius: 0;
     max-width: 100%;
 }
 

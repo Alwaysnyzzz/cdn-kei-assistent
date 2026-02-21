@@ -8,6 +8,52 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="css/lobbyqris.css">
+    <style>
+        /* Sembunyikan navigasi (Home, Alat, Contact, dll) */
+        .nav-links {
+            display: none !important;
+        }
+        /* Pastikan header tetap rapi */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+            margin-bottom: 30px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 0 20px #ff69b4;
+        }
+        .logo-text h1 {
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffb6c1, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px #ff69b4;
+            line-height: 1.2;
+        }
+        .logo-text p {
+            font-size: 0.9rem;
+            color: #ffb6c1;
+        }
+    </style>
 </head>
 <body>
     <div id="particles"></div>
@@ -20,13 +66,7 @@
                     <p>pink neon · lobby qris</p>
                 </div>
             </div>
-            <div class="nav-links">
-                <a href="../index.html">Home</a>
-                <a href="../alat.html">Alat</a>
-                <a href="../contact.html">Contact</a>
-                <a href="../product.html">Product</a>
-                <a href="../donasi.html">Donasi</a>
-            </div>
+            <!-- Navigasi disembunyikan via CSS -->
         </header>
 
         <!-- Card luar dengan sudut tumpul -->
