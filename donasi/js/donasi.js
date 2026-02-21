@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+    alert('Halaman donasi dimuat');
     const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI DENGAN URL VERCEL ANDA
 
     const payBtn = document.getElementById('payBtn');
+    alert('Tombol Buat QRIS ditemukan: ' + (payBtn ? 'ya' : 'tidak'));
+
     const amountInput = document.getElementById('amount');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
     const customAmountInput = document.getElementById('customAmount');
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+        alert('Tombol Buat QRIS diklik');
         if (!selectedAmount || !selectedOrderId) {
             alert('Pilih nominal terlebih dahulu');
             return;
@@ -87,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: selectedAmount, orderId: selectedOrderId })
             });
+            alert('Response status: ' + response.status);
             const data = await response.json();
             alert('Respons dari backend: ' + JSON.stringify(data));
 
@@ -96,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
                 const expiry = Date.now() + 10 * 60 * 1000;
 
-                // Simpan data transaksi ke localStorage
                 const transactionData = {
                     id: selectedOrderId,
                     amount: selectedAmount,
@@ -106,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
                 alert('Data disimpan di localStorage, redirecting...');
 
-                // Redirect ke lobby dengan ID
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
                 alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
