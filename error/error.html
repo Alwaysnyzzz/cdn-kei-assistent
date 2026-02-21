@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEI ASSISTENT · Error</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="css/error.css">
+</head>
+<body>
+    <div id="particles"></div>
+    <div class="wrapper">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-crown"></i></div>
+                <div class="logo-text">
+                    <h1>KEI ASSISTENT</h1>
+                    <p>pink neon · error</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../alat.html">Alat</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../product.html">Product</a>
+                <a href="../donasi.html">Donasi</a>
+            </div>
+        </header>
+
+        <div class="error-card">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Maaf, sedang terjadi error</h2>
+            <p id="errorMessage">Silakan coba lagi nanti.</p>
+            <p id="errorCode" class="error-code"></p>
+            <button class="btn-refresh" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Refresh Halaman</button>
+            <button class="btn-back" onclick="history.back()"><i class="fas fa-arrow-left"></i> Kembali</button>
+        </div>
+    </div>
+
+    <script src="js/error.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+.error-card {
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ff69b4;
+    border-radius: 30px;
+    padding: 40px;
+    max-width: 500px;
+    margin: 50px auto;
+    text-align: center;
+    box-shadow: 0 0 30px #ff69b4;
+    backdrop-filter: blur(10px);
+}
+
+.error-card i {
+    font-size: 4rem;
+    color: #ff69b4;
+    margin-bottom: 20px;
+}
+
+.error-card h2 {
+    color: #ffb6c1;
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.error-card p {
+    color: #ffccdd;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.error-code {
+    color: #ff99cc;
+    font-size: 0.9rem;
+    background: rgba(255,105,180,0.2);
+    padding: 8px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.btn-refresh, .btn-back {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px #ff69b4;
+    margin: 10px;
+    font-size: 1rem;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-refresh:hover, .btn-back:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff1493;
+}
+
+.btn-back {
+    background: transparent;
+    border: 1px solid #ff69b4;
+    box-shadow: none;
+}
+.btn-back:hover {
+    background: rgba(255,105,180,0.2);
+}

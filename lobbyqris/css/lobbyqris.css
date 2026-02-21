@@ -1,11 +1,7 @@
-.lobby-card {
-    background: black;
-    border: 2px solid #ff69b4;
-    border-radius: 30px;
-    padding: 35px;
+.qris-container {
     max-width: 500px;
     margin: 40px auto;
-    box-shadow: 0 0 30px #ff69b4;
+    padding: 20px;
 }
 
 .btn-copy {

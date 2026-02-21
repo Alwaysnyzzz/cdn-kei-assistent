@@ -9,13 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     const loadingText = document.getElementById('loadingText');
     const localLoading = document.getElementById('localLoading');
+    const timerElement = document.getElementById('timer');
     
-    // Modal konfirmasi
     const cancelModal = document.getElementById('cancelModal');
     const confirmYes = document.getElementById('confirmCancelYes');
     const confirmNo = document.getElementById('confirmCancelNo');
 
-    // Ambil data dari localStorage
     const lobbyData = JSON.parse(localStorage.getItem('lobbyQris'));
     if (!lobbyData || !lobbyData.amount || !lobbyData.orderId) {
         alert('Data tidak ditemukan. Kembali ke halaman donasi.');
@@ -24,12 +23,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const { amount, orderId } = lobbyData;
+    let expiryTime = localStorage.getItem('qrisExpiry');
+    let qrUrl = localStorage.getItem('qrisImageUrl');
 
-    // Tampilkan loading global
+    function startTimer(expiryTimestamp) {
+        const interval = setInterval(() => {
+            const now = Date.now();
+            const diff = expiryTimestamp - now;
+            if (diff <= 0) {
+                clearInterval(interval);
+                timerElement.textContent = 'Kadaluarsa';
+                statusArea.innerHTML = '<p style="color:#ff69b4; text-align:center;">QRIS telah kadaluarsa. Silakan buat transaksi baru.</p>';
+                checkStatusBtn.disabled = true;
+                cancelBtn.disabled = true;
+                downloadQrisBtn.disabled = true;
+                localStorage.removeItem('lobbyQris');
+                localStorage.removeItem('qrisExpiry');
+                localStorage.removeItem('qrisImageUrl');
+                return;
+            }
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+        return interval;
+    }
+
+    if (qrUrl && expiryTime && parseInt(expiryTime) > Date.now()) {
+        qrisImage.src = qrUrl;
+        qrisImage.style.display = 'inline';
+        downloadQrisBtn.dataset.qrUrl = qrUrl;
+        startTimer(parseInt(expiryTime));
+        return;
+    } else {
+        localStorage.removeItem('lobbyQris');
+        localStorage.removeItem('qrisExpiry');
+        localStorage.removeItem('qrisImageUrl');
+    }
+
     loadingText.textContent = 'Sedang membuat QRIS, mohon tunggu...';
     loadingOverlay.classList.add('show');
 
-    // Fungsi membuat QRIS
     async function createQris() {
         try {
             const response = await fetch(`${API_BASE_URL}/create-qris`, {
@@ -40,42 +74,34 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             loadingOverlay.classList.remove('show');
 
-            console.log('Response from API:', data);
-            console.log('Payment number:', data.payment?.payment_number);
-
             if (response.ok && data.success) {
                 const payment = data.payment;
-                const qrString = payment.payment_number; // string data QRIS
-
-                // Tampilkan loading lokal
+                const qrString = payment.payment_number;
                 qrisImage.style.display = 'none';
                 localLoading.style.display = 'flex';
-
-                // Buat URL QR code menggunakan API eksternal
                 const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
-
-                // Tunggu 1,5 detik lalu tampilkan QR
+                const expiry = Date.now() + 10 * 60 * 1000;
+                localStorage.setItem('qrisExpiry', expiry);
+                localStorage.setItem('qrisImageUrl', qrApiUrl);
                 setTimeout(() => {
                     localLoading.style.display = 'none';
                     qrisImage.src = qrApiUrl;
                     qrisImage.style.display = 'inline';
-                    // Simpan URL untuk keperluan download
                     downloadQrisBtn.dataset.qrUrl = qrApiUrl;
+                    startTimer(expiry);
                 }, 1500);
             } else {
-                alert('Gagal membuat QRIS: ' + (data.error || 'Unknown error'));
-                window.location.href = '../donasi.html';
+                const errorMsg = data.error || 'Unknown error';
+                window.location.href = `../error/error.html?code=${encodeURIComponent(errorMsg)}`;
             }
         } catch (err) {
             loadingOverlay.classList.remove('show');
-            alert('Error: ' + err.message);
-            window.location.href = '../donasi.html';
+            window.location.href = `../error/error.html?code=${encodeURIComponent(err.message)}`;
         }
     }
 
     createQris();
 
-    // Fungsi download QR (menggunakan fetch blob agar benar-benar mendownload file)
     async function downloadQR(url) {
         try {
             const response = await fetch(url);
@@ -95,14 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     downloadQrisBtn.addEventListener('click', function() {
         const qrUrl = this.dataset.qrUrl;
-        if (qrUrl) {
-            downloadQR(qrUrl);
-        } else {
-            alert('QR belum tersedia');
-        }
+        if (qrUrl) downloadQR(qrUrl);
+        else alert('QR belum tersedia');
     });
 
-    // Cek status (manual)
     checkStatusBtn.addEventListener('click', async function() {
         loadingText.textContent = 'Mengecek Pembayaran...';
         loadingOverlay.classList.add('show');
@@ -165,26 +187,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Batalkan transaksi dengan modal custom
-    cancelBtn.addEventListener('click', function() {
-        cancelModal.classList.add('show');
-    });
+    cancelBtn.addEventListener('click', () => cancelModal.classList.add('show'));
 
-    confirmYes.addEventListener('click', function() {
+    confirmYes.addEventListener('click', () => {
         cancelModal.classList.remove('show');
         localStorage.removeItem('lobbyQris');
+        localStorage.removeItem('qrisExpiry');
+        localStorage.removeItem('qrisImageUrl');
         window.location.href = '../donasi.html';
     });
 
-    confirmNo.addEventListener('click', function() {
-        cancelModal.classList.remove('show');
-    });
+    confirmNo.addEventListener('click', () => cancelModal.classList.remove('show'));
 
-    // Tutup modal jika klik di luar
-    window.addEventListener('click', function(e) {
-        if (e.target === cancelModal) {
-            cancelModal.classList.remove('show');
-        }
+    window.addEventListener('click', (e) => {
+        if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
     particleground(document.getElementById('particles'), {
