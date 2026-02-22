@@ -1,22 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Ambil konfigurasi (default minimal 500)
     const config = window.WEBSITE_CONFIG || {};
     const MIN_AMOUNT = config.MIN_DONATION || 500;
 
     const payBtn = document.getElementById('payBtn');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
-    const customAmountInput = document.getElementById('customAmount');
-    const applyCustomBtn = document.getElementById('applyCustomAmount');
     const selectedAmountDisplay = document.getElementById('selectedAmountDisplay');
     const selectedAmountText = document.getElementById('selectedAmountText');
 
     let selectedAmount = null;
     let selectedOrderId = null;
-
-    if (customAmountInput) {
-        customAmountInput.min = MIN_AMOUNT;
-        customAmountInput.placeholder = `Min ${MIN_AMOUNT.toLocaleString()}`;
-    }
 
     function generateOrderId() {
         return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
@@ -32,20 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedAmountDisplay.style.display = 'block';
             payBtn.disabled = false;
         });
-    });
-
-    applyCustomBtn.addEventListener('click', function() {
-        const customAmount = parseInt(customAmountInput.value);
-        if (isNaN(customAmount) || customAmount < MIN_AMOUNT) {
-            alert(`Minimal Rp ${MIN_AMOUNT.toLocaleString()}`);
-            return;
-        }
-        selectedAmount = customAmount;
-        selectedOrderId = generateOrderId();
-        selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
-        selectedAmountDisplay.style.display = 'block';
-        payBtn.disabled = false;
-        quickAmountBtns.forEach(b => b.classList.remove('active'));
     });
 
     payBtn.addEventListener('click', function(e) {
@@ -73,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
     });
 
+    // Inisialisasi particles (jika ada)
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
     });
 
-    // Cek Status (hanya menampilkan status, tidak otomatis sukses)
+    // Cek Status
     document.getElementById('checkStatusBtn').addEventListener('click', function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('show');
 
         if (updatedData.status === 'completed') {
-            // Tampilkan status sukses dan modal sukses
             statusArea.innerHTML = '<p style="color:#28a745;">✅ Status: Sukses</p>';
             // Tampilkan modal sukses
             showSuccessModal();
@@ -84,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Simulasi Bayar (hanya mengubah status menjadi 'paid' – bukan completed)
+    // Simulasi Bayar (langsung sukses)
     document.getElementById('simulatePayBtn').addEventListener('click', function() {
         if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;
 
@@ -92,11 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!stored) return;
 
         const data = JSON.parse(stored);
-        data.status = 'paid'; // Status menunggu konfirmasi, bukan completed
-        data.paid_at = new Date().toISOString();
+        data.status = 'completed';
+        data.completed_at = new Date().toISOString();
         localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
 
-        alert('Simulasi pembayaran berhasil! Status sekarang "paid". Klik Cek Status untuk melihat.');
+        // Tampilkan modal sukses
+        showSuccessModal();
     });
 
     // Elemen modal sukses

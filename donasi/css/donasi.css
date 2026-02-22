@@ -75,48 +75,26 @@
     box-shadow: 0 0 20px #ff1493;
 }
 
-.custom-amount-wrapper {
+/* Tombol custom nominal */
+.btn-custom-nominal {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255,105,180,0.05);
+    border: 1px dashed #ff69b4;
+    border-radius: 60px;
+    padding: 12px;
+    color: #ffb6c1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
     margin-bottom: 20px;
 }
-.custom-amount-input-group {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid #ff69b4;
-    border-radius: 60px;
-    overflow: hidden;
-}
-.currency-prefix {
-    padding: 0 15px;
-    color: #ffb6c1;
-    font-weight: 600;
-    background: rgba(255,105,180,0.1);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    border-right: 1px solid #ff69b4;
-}
-#customAmount {
-    flex: 1;
-    background: transparent;
-    border: none;
-    padding: 12px 15px;
-    color: white;
-    font-size: 1rem;
-    outline: none;
-}
-#applyCustomAmount {
-    background: linear-gradient(135deg, #ff69b4, #ff1493);
-    border: none;
-    border-radius: 60px;
-    padding: 12px 25px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap;
+.btn-custom-nominal:hover {
+    background: rgba(255,105,180,0.2);
+    color: #ff1493;
+    border-color: #ff1493;
 }
 
 .selected-amount-info {

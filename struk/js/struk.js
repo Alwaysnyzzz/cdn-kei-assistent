@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const amount = data.amount;
     const fee = Math.floor(amount * 0.007); // contoh fee 0.7%
     const net = amount - fee;
-    const waktu = new Date(data.completed_at || data.paid_at || data.created_at).toLocaleString('id-ID', {
+    const waktu = new Date(data.completed_at || data.created_at).toLocaleString('id-ID', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
 
-    // Format ID agar lebih rapi (tampilkan 8 karakter pertama + ...)
-    const shortId = data.id.length > 16 ? data.id.substring(0, 16) + '...' : data.id;
+    // Format ID agar lebih rapi
+    const shortId = data.id.length > 20 ? data.id.substring(0, 20) + '...' : data.id;
 
     const container = document.getElementById('strukContainer');
     container.innerHTML = `
