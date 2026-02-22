@@ -1,10 +1,23 @@
-const CONFIG = {
-    API_BASE_URL: 'https://brat.siputzx.my.id',
+// =====================================================
+// KONFIGURASI WEBSITE (PERINGATAN: API KEY TER-EKSPOS!)
+// =====================================================
+
+const WEBSITE_CONFIG = {
+    // API Key Pakasir (RAHASIA! Jangan pernah simpan di frontend jika publik)
+    API_KEY: 'jXWwWYZLB8iUoRXBKts0zfXQFhTj21kG',
+    
+    // Slug proyek
+    PROJECT_SLUG: 'nyzz-store',
+    
+    // URL API Pakasir
+    PAKASIR_API_URL: 'https://app.pakasir.com/api',
+    
+    // Minimal donasi
+    MIN_DONATION: 500,
+    
+    // Tampilan
     APP_NAME: 'KEI ASSISTENT',
-    DASHBOARD_IMAGE_URL: 'https://files.catbox.moe/olvb6d.jpg', // Ganti sesuai keinginan
-    ALAT_IMAGE_URL: 'https://files.catbox.moe/olvb6d.jpg',      // Bisa sama atau beda
-    WA_NUMBER: '+62 877-1347-2756',
-    WA_LINK: 'https://wa.me/6287713472756',
-    TELEGRAM_USERNAME: '@keikawaiii',
-    TELEGRAM_LINK: 'https://t.me/keikawaiii'
+    THEME_COLOR: '#ff69b4'
 };
+
+window.WEBSITE_CONFIG = WEBSITE_CONFIG;

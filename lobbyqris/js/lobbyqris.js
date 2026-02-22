@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI JIKA BERBEDA
+    const config = window.WEBSITE_CONFIG || {};
+    const API_KEY = config.API_KEY;
+    const PROJECT_SLUG = config.PROJECT_SLUG;
+    const PAKASIR_API_URL = config.PAKASIR_API_URL;
 
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
@@ -19,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const data = JSON.parse(stored);
     const amount = data.amount;
-    const orderId = data.order_id; // order_id asli dari Pakasir
+    const orderId = data.order_id;
 
     // Tampilkan QR
     const qrisImage = document.getElementById('qrisImage');
@@ -66,17 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
         statusArea.innerHTML = '';
 
         try {
-            const res = await fetch(`${API_BASE_URL}/check-status`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, orderId })
-            });
-            const data = await res.json();
+            const url = `${PAKASIR_API_URL}/transactiondetail?project=${PROJECT_SLUG}&amount=${amount}&order_id=${orderId}&api_key=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
             overlay.classList.remove('show');
 
-            if (res.ok && data.success) {
+            if (data.transaction) {
                 const tx = data.transaction;
-                if (tx.status === 'success' || tx.status === 'paid' || tx.status === 'completed') {
+                if (tx.status === 'completed' || tx.status === 'paid' || tx.status === 'success') {
                     statusArea.innerHTML = '<p style="color:#28a745;">✅ Pembayaran sukses</p>';
                 } else if (tx.status === 'pending' || tx.status === 'waiting') {
                     statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
@@ -88,7 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (err) {
             overlay.classList.remove('show');
-            statusArea.innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
+            console.error(err);
+            if (err.message.includes('Failed to fetch')) {
+                alert('Gagal menghubungi API Pakasir. Kemungkinan karena CORS.');
+            } else {
+                alert('Error: ' + err.message);
+            }
         }
     });
 
@@ -110,42 +115,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('click', (e) => {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
-    });
-
-    // Tombol simulasi pembayaran (hanya untuk testing)
-    document.getElementById('simulatePayBtn')?.addEventListener('click', async function() {
-        if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk testing)')) return;
-
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.classList.add('show');
-        const statusArea = document.getElementById('statusArea');
-        statusArea.innerHTML = '';
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/simulate-payment`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, amount })
-            });
-            const data = await res.json();
-            overlay.classList.remove('show');
-
-            if (res.ok && data.success) {
-                alert('Simulasi berhasil! Status transaksi diubah menjadi completed.');
-                // Panggil cek status otomatis
-                document.getElementById('checkStatusBtn').click();
-            } else {
-                alert('Simulasi gagal: ' + (data.error || 'Unknown error'));
-            }
-        } catch (err) {
-            overlay.classList.remove('show');
-            alert('Error: ' + err.message);
-        }
-    });
-
-    particleground(document.getElementById('particles'), {
-        dotColor: '#ffb6c1',
-        lineColor: '#ff69b4',
-        density: 12000
     });
 });

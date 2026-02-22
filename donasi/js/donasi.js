@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Ambil konfigurasi (jika ada) atau gunakan default
-    const config = window.DONASI_CONFIG || {};
-    const API_BASE_URL = config.API_BASE_URL || 'https://vercel-upload-jet.vercel.app/api';
-    const MIN_AMOUNT = config.MIN_AMOUNT || 500;
+    const config = window.WEBSITE_CONFIG || {};
+    const API_KEY = config.API_KEY;
+    const PROJECT_SLUG = config.PROJECT_SLUG;
+    const PAKASIR_API_URL = config.PAKASIR_API_URL;
+    const MIN_AMOUNT = config.MIN_DONATION || 500;
 
     const payBtn = document.getElementById('payBtn');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
@@ -60,14 +61,19 @@ document.addEventListener('DOMContentLoaded', function() {
         payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
         try {
-            const response = await fetch(`${API_BASE_URL}/create-qris`, {
+            const response = await fetch(`${PAKASIR_API_URL}/transactioncreate/qris`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: selectedAmount, orderId: selectedOrderId })
+                body: JSON.stringify({
+                    project: PROJECT_SLUG,
+                    order_id: selectedOrderId,
+                    amount: selectedAmount,
+                    api_key: API_KEY
+                })
             });
             const data = await response.json();
 
-            if (response.ok && data.success) {
+            if (data.payment) {
                 const payment = data.payment;
                 const qrString = payment.payment_number;
                 const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
@@ -88,17 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
             }
         } catch (err) {
-            alert('Error: ' + err.message);
+            console.error('Error:', err);
+            if (err.message.includes('Failed to fetch')) {
+                alert('Koneksi ke API Pakasir gagal. Kemungkinan karena CORS. Baca catatan di bawah.');
+            } else {
+                alert('Error: ' + err.message);
+            }
             payBtn.disabled = false;
             payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
         }
     });
-
-    if (typeof particleground !== 'undefined') {
-        particleground(document.getElementById('particles'), {
-            dotColor: '#ffb6c1',
-            lineColor: '#ff69b4',
-            density: 12000
-        });
-    }
 });
