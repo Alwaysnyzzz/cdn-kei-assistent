@@ -13,9 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Validasi hanya URL backend
     if (!API_BASE_URL) {
-        alert('Konfigurasi tidak lengkap (URL backend tidak ditemukan). Hubungi admin.');
+        alert('Konfigurasi tidak lengkap. Hubungi admin.');
         payBtn.disabled = true;
         return;
     }
