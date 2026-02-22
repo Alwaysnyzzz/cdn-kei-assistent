@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
     });
 
-    // Cek Status
+    // Cek Status (hanya menampilkan status, tidak otomatis sukses)
     document.getElementById('checkStatusBtn').addEventListener('click', function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
@@ -73,38 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('show');
 
         if (updatedData.status === 'completed') {
-            const fee = Math.floor(amount * 0.007);
-            const net = amount - fee;
-            const waktu = new Date(updatedData.completed_at || Date.now()).toLocaleString('id-ID');
-
-            statusArea.innerHTML = `
-                <div class="status-success">
-                    <div class="success-circle animated-pulse">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <h3>✅ Pembayaran Sukses!</h3>
-                    <div class="transaction-details">
-                        <p><strong>ID Transaksi:</strong> ${orderId}</p>
-                        <p><strong>Jumlah:</strong> Rp ${amount.toLocaleString()}</p>
-                        <p><strong>Fee:</strong> Rp ${fee.toLocaleString()}</p>
-                        <p><strong>Saldo diterima:</strong> Rp ${net.toLocaleString()}</p>
-                        <p><strong>Via:</strong> QRIS (Simulasi)</p>
-                        <p><strong>Waktu:</strong> ${waktu}</p>
-                    </div>
-                    <button class="btn-struk" id="closeStruk">Tutup</button>
-                </div>
-            `;
-            document.getElementById('closeStruk')?.addEventListener('click', () => {
-                statusArea.innerHTML = '';
-            });
+            // Tampilkan status sukses dan modal sukses
+            statusArea.innerHTML = '<p style="color:#28a745;">✅ Status: Sukses</p>';
+            // Tampilkan modal sukses
+            showSuccessModal();
         } else if (updatedData.status === 'pending') {
-            statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
+            statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Status: Menunggu pembayaran</p>';
         } else {
             statusArea.innerHTML = `<p style="color:#ff69b4;">Status: ${updatedData.status}</p>`;
         }
     });
 
-    // Simulasi Bayar
+    // Simulasi Bayar (hanya mengubah status menjadi 'paid' – bukan completed)
     document.getElementById('simulatePayBtn').addEventListener('click', function() {
         if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;
 
@@ -112,12 +92,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!stored) return;
 
         const data = JSON.parse(stored);
-        data.status = 'completed';
-        data.completed_at = new Date().toISOString();
+        data.status = 'paid'; // Status menunggu konfirmasi, bukan completed
+        data.paid_at = new Date().toISOString();
         localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
 
-        // Tampilkan modal sukses
-        showSuccessModal();
+        alert('Simulasi pembayaran berhasil! Status sekarang "paid". Klik Cek Status untuk melihat.');
     });
 
     // Elemen modal sukses
@@ -169,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    // Inisialisasi particles (jika ada)
+    // Inisialisasi particles
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',

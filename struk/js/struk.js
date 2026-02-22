@@ -19,7 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const amount = data.amount;
     const fee = Math.floor(amount * 0.007); // contoh fee 0.7%
     const net = amount - fee;
-    const waktu = new Date(data.completed_at || data.created_at).toLocaleString('id-ID');
+    const waktu = new Date(data.completed_at || data.paid_at || data.created_at).toLocaleString('id-ID', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    // Format ID agar lebih rapi (tampilkan 8 karakter pertama + ...)
+    const shortId = data.id.length > 16 ? data.id.substring(0, 16) + '...' : data.id;
 
     const container = document.getElementById('strukContainer');
     container.innerHTML = `
@@ -28,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h2>Struk Transaksi</h2>
         </div>
         <div class="struk-details">
-            <p><span class="label">ID Transaksi</span> <span class="value">${data.id}</span></p>
+            <p><span class="label">ID Transaksi</span> <span class="value">${shortId}</span></p>
             <p><span class="label">Jumlah Donasi</span> <span class="value">Rp ${amount.toLocaleString()}</span></p>
             <p><span class="label">Biaya Layanan</span> <span class="value">Rp ${fee.toLocaleString()}</span></p>
             <p><span class="label">Total Diterima</span> <span class="value">Rp ${net.toLocaleString()}</span></p>
