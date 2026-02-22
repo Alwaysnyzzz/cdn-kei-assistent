@@ -24,38 +24,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const data = JSON.parse(stored);
+    console.log('Data dari localStorage:', data);
+
+    // Validasi keberadaan payment_number
+    if (!data.payment_number) {
+        console.error('payment_number tidak ada dalam data:', data);
+        alert('Data transaksi tidak valid (tidak ada payment_number). Silakan buat ulang.');
+        window.location.href = '../donasi.html';
+        return;
+    }
+
     const amount = data.amount;
     const orderId = data.id;
-    const paymentNumber = data.payment_number; // String QRIS asli dari Pakasir
-
-    console.log('Transaction data:', data);
+    const paymentNumber = data.payment_number;
 
     const qrisImage = document.getElementById('qrisImage');
     const downloadQrisBtn = document.getElementById('downloadQrisBtn');
 
     // Generate QR menggunakan library QRCode
-    if (paymentNumber) {
-        QRCode.toDataURL(paymentNumber, { width: 300 }, function(err, url) {
-            if (err) {
-                console.error('QR Generation Error:', err);
-                alert('Gagal membuat QR code. Silakan coba lagi.');
-                return;
-            }
-            console.log('QR generated successfully');
-            qrisImage.src = url;
-            qrisImage.style.display = 'inline';
-            downloadQrisBtn.dataset.qrUrl = url;
-        });
-    } else {
-        console.error('payment_number not found in stored data');
-        alert('Data transaksi tidak valid (tidak ada payment_number)');
-        window.location.href = '../donasi.html';
-        return;
-    }
+    QRCode.toDataURL(paymentNumber, { width: 300 }, function(err, url) {
+        if (err) {
+            console.error('QR Generation Error:', err);
+            alert('Gagal membuat QR code. Silakan coba lagi.');
+            return;
+        }
+        console.log('QR generated successfully');
+        qrisImage.src = url;
+        qrisImage.style.display = 'inline';
+        downloadQrisBtn.dataset.qrUrl = url;
+    });
 
     document.getElementById('transactionId').textContent = transactionId;
 
-    // Timer 10 menit
+    // Timer
     function startTimer(expiry) {
         const timer = document.getElementById('timer');
         const update = () => {
@@ -191,7 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    // Particles
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',

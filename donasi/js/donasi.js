@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('donasi.js loaded'); // Untuk cek di console
+    console.log('donasi.js loaded');
 
     const config = window.WEBSITE_CONFIG || {};
     const API_KEY = config.PAKASIR_API_KEY;
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Set placeholder input manual
     if (customAmountInput) {
         customAmountInput.min = MIN_AMOUNT;
         customAmountInput.placeholder = `Min ${MIN_AMOUNT.toLocaleString()}`;
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
     }
 
-    // Validasi API Key
     if (!API_KEY || !PROJECT_SLUG) {
         console.error('API Key atau Project Slug tidak ditemukan di config.js');
         alert('Konfigurasi tidak lengkap. Hubungi admin.');
@@ -35,10 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Tombol nominal cepat
     quickAmountBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            console.log('Nominal button clicked:', this.dataset.amount);
             quickAmountBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             selectedAmount = parseInt(this.dataset.amount);
@@ -49,14 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Tombol custom nominal
     applyCustomBtn.addEventListener('click', function() {
         const customAmount = parseInt(customAmountInput.value);
         if (isNaN(customAmount) || customAmount < MIN_AMOUNT) {
             alert(`Minimal Rp ${MIN_AMOUNT.toLocaleString()}`);
             return;
         }
-        console.log('Custom amount:', customAmount);
         selectedAmount = customAmount;
         selectedOrderId = generateOrderId();
         selectedAmountText.textContent = `Rp ${selectedAmount.toLocaleString()}`;
@@ -65,11 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
         quickAmountBtns.forEach(b => b.classList.remove('active'));
     });
 
-    // Tombol Buat QRIS
     payBtn.addEventListener('click', async function(e) {
         e.preventDefault();
-        console.log('Pay button clicked');
-
         if (!selectedAmount || !selectedOrderId) {
             alert('Pilih nominal dulu');
             return;
@@ -79,13 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungi Pakasir...';
 
         try {
-            console.log('Sending request to Pakasir:', {
-                project: PROJECT_SLUG,
-                order_id: selectedOrderId,
-                amount: selectedAmount,
-                api_key: '***' // Jangan log API key asli
-            });
-
+            console.log('Mengirim request ke Pakasir...');
             const response = await fetch(`${API_URL}/transactioncreate/qris`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -98,12 +83,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
-            console.log('Response from Pakasir:', data);
+            console.log('Respons dari Pakasir:', data);
 
-            if (data.payment) {
+            if (data.payment && data.payment.payment_number) {
                 const payment = data.payment;
                 const qrString = payment.payment_number;
-                const expiry = Date.now() + 10 * 60 * 1000; // 10 menit
+                const expiry = Date.now() + 10 * 60 * 1000;
 
                 const transactionData = {
                     id: selectedOrderId,
@@ -116,22 +101,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
-                console.log('Data saved to localStorage, redirecting to lobby...');
+                console.log('Data disimpan di localStorage, redirect ke lobby...');
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
-                alert('Gagal: ' + (data.error || JSON.stringify(data)));
+                console.error('Respons tidak memiliki payment_number:', data);
+                alert('Gagal: Respons dari server tidak valid. Lihat console.');
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
             }
         } catch (err) {
             console.error('Fetch error:', err);
-            alert('Gagal menghubungi server. Periksa koneksi atau CORS. Lihat console untuk detail.');
+            alert('Gagal menghubungi server: ' + err.message);
             payBtn.disabled = false;
             payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
         }
     });
 
-    // Inisialisasi particles (jika ada)
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',
