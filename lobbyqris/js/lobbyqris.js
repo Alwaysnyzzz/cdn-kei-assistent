@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ===== AMBIL KONFIGURASI =====
+    console.log('lobbyqris.js loaded');
+
     const config = window.WEBSITE_CONFIG || {};
     const IS_PRODUCTION = config.IS_PRODUCTION || false;
     const API_KEY = config.PAKASIR_API_KEY;
     const PROJECT_SLUG = config.PROJECT_SLUG;
     const API_URL = config.PAKASIR_API_URL || 'https://app.pakasir.com/api';
 
-    // ===== ELEMEN DOM =====
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
 
@@ -28,10 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const orderId = data.id;
     const paymentNumber = data.payment_number; // String QRIS asli dari Pakasir
 
-    // ===== TAMPILKAN QR MENGGUNAKAN LIBRARY QRCODE =====
+    console.log('Transaction data:', data);
+
     const qrisImage = document.getElementById('qrisImage');
     const downloadQrisBtn = document.getElementById('downloadQrisBtn');
 
+    // Generate QR menggunakan library QRCode
     if (paymentNumber) {
         QRCode.toDataURL(paymentNumber, { width: 300 }, function(err, url) {
             if (err) {
@@ -39,20 +41,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Gagal membuat QR code. Silakan coba lagi.');
                 return;
             }
+            console.log('QR generated successfully');
             qrisImage.src = url;
             qrisImage.style.display = 'inline';
             downloadQrisBtn.dataset.qrUrl = url;
         });
     } else {
-        // Fallback jika paymentNumber tidak ada (seharusnya tidak terjadi)
-        qrisImage.src = data.qr_url;
-        qrisImage.style.display = 'inline';
-        downloadQrisBtn.dataset.qrUrl = data.qr_url;
+        console.error('payment_number not found in stored data');
+        alert('Data transaksi tidak valid (tidak ada payment_number)');
+        window.location.href = '../donasi.html';
+        return;
     }
 
     document.getElementById('transactionId').textContent = transactionId;
 
-    // ===== TIMER 10 MENIT =====
+    // Timer 10 menit
     function startTimer(expiry) {
         const timer = document.getElementById('timer');
         const update = () => {
@@ -71,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     startTimer(data.expiry);
 
-    // ===== DOWNLOAD QR =====
+    // Download QR
     downloadQrisBtn.addEventListener('click', async function() {
         const url = this.dataset.qrUrl;
         if (!url) return;
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
     });
 
-    // ===== CEK STATUS =====
+    // Cek Status
     document.getElementById('checkStatusBtn').addEventListener('click', async function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
@@ -90,7 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
         statusArea.innerHTML = '';
 
         try {
-            const response = await fetch(`${API_URL}/transactiondetail?project=${PROJECT_SLUG}&amount=${amount}&order_id=${orderId}&api_key=${API_KEY}`);
+            const url = `${API_URL}/transactiondetail?project=${PROJECT_SLUG}&amount=${amount}&order_id=${orderId}&api_key=${API_KEY}`;
+            console.log('Checking status via:', url.replace(API_KEY, '***'));
+
+            const response = await fetch(url);
             const data = await response.json();
             overlay.classList.remove('show');
 
@@ -114,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== SIMULASI BAYAR (HANYA UNTUK SANDBOX) =====
+    // Simulasi Bayar (hanya untuk sandbox)
     const simulateBtn = document.getElementById('simulatePayBtn');
     if (simulateBtn) {
         if (IS_PRODUCTION) {
@@ -136,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== MODAL SUKSES =====
+    // Modal sukses
     const successModal = document.getElementById('successModal');
     const successDetailBtn = document.getElementById('successDetailBtn');
     const successHomeBtn = document.getElementById('successHomeBtn');
@@ -165,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== BATALKAN TRANSAKSI =====
+    // Batalkan transaksi
     const cancelBtn = document.getElementById('cancelBtn');
     const cancelModal = document.getElementById('cancelModal');
     const confirmYes = document.getElementById('confirmCancelYes');
@@ -185,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    // ===== PARTICLES (JIKA ADA) =====
+    // Particles
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',
