@@ -47,6 +47,21 @@
     transition: 0.3s;
     flex: 1 0 auto;
     min-width: 70px;
+    position: relative;
+    overflow: hidden;
+}
+.quick-amount-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%,-50%);
+    transition: width 0.3s, height 0.3s;
+}
+.quick-amount-btn:active::after {
+    width: 200px; height: 200px;
 }
 .quick-amount-btn:hover {
     background: #ff69b4;

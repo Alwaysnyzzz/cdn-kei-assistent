@@ -115,6 +115,7 @@
     animation: spin 1s linear infinite;
 }
 
+/* Status area */
 .status-success, .status-failed {
     text-align: center;
     padding: 20px 0;
@@ -177,6 +178,7 @@
     margin-top: 10px;
 }
 
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -202,4 +204,54 @@
     box-shadow: 0 0 50px #ff1493;
     max-width: 400px;
     width: 90%;
+}
+
+/* Sukses modal khusus */
+.success-circle-big {
+    background: #28a745;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 0 30px #28a745;
+    animation: pulse 1.5s infinite;
+}
+.success-circle-big i {
+    font-size: 4rem;
+    color: white;
+}
+
+.btn-detail {
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: #ffb6c1;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    flex: 1;
+}
+.btn-detail:hover {
+    background: #ff69b4;
+    color: white;
+}
+
+.btn-home {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    flex: 1;
+}
+.btn-home:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ff1493;
 }

@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusArea = document.getElementById('statusArea');
         statusArea.innerHTML = '';
 
-        // Ambil data terbaru dari localStorage
         const updatedData = JSON.parse(localStorage.getItem(`lobbyQris_${transactionId}`));
         if (!updatedData) {
             statusArea.innerHTML = '<p style="color:#ff69b4;">Data tidak ditemukan</p>';
@@ -74,8 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('show');
 
         if (updatedData.status === 'completed') {
-            // Tampilkan struk
-            const fee = Math.floor(amount * 0.007); // contoh fee 0.7%
+            const fee = Math.floor(amount * 0.007);
             const net = amount - fee;
             const waktu = new Date(updatedData.completed_at || Date.now()).toLocaleString('id-ID');
 
@@ -118,9 +116,37 @@ document.addEventListener('DOMContentLoaded', function() {
         data.completed_at = new Date().toISOString();
         localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
 
-        alert('Simulasi berhasil! Status berubah menjadi completed.');
-        // Panggil cek status untuk menampilkan struk
-        document.getElementById('checkStatusBtn').click();
+        // Tampilkan modal sukses
+        showSuccessModal();
+    });
+
+    // Elemen modal sukses
+    const successModal = document.getElementById('successModal');
+    const successDetailBtn = document.getElementById('successDetailBtn');
+    const successHomeBtn = document.getElementById('successHomeBtn');
+
+    function showSuccessModal() {
+        if (successModal) successModal.classList.add('show');
+    }
+
+    if (successDetailBtn) {
+        successDetailBtn.addEventListener('click', function() {
+            successModal.classList.remove('show');
+            window.location.href = `../struk/struk.html?id=${transactionId}`;
+        });
+    }
+
+    if (successHomeBtn) {
+        successHomeBtn.addEventListener('click', function() {
+            successModal.classList.remove('show');
+            window.location.href = '../index.html';
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target === successModal) {
+            successModal.classList.remove('show');
+        }
     });
 
     // Batalkan transaksi

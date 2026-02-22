@@ -1,0 +1,62 @@
+.struk-card {
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 30px;
+    padding: 35px;
+    max-width: 500px;
+    margin: 40px auto;
+    box-shadow: 0 0 30px #ff69b4;
+}
+
+.struk-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.struk-header i {
+    font-size: 3rem;
+    color: #ff69b4;
+}
+.struk-header h2 {
+    color: #ffb6c1;
+    font-size: 2rem;
+    margin-top: 10px;
+}
+
+.struk-details {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
+    color: #ffccdd;
+    line-height: 1.8;
+}
+.struk-details p {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+.struk-details .label {
+    color: #ffb6c1;
+    font-weight: 600;
+}
+.struk-details .value {
+    color: #ffe4f2;
+    text-align: right;
+}
+
+.btn-back-struk {
+    background: black;
+    border: 2px solid #ff69b4;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: #ffb6c1;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    margin-top: 20px;
+}
+.btn-back-struk:hover {
+    background: #ff69b4;
+    color: white;
+}

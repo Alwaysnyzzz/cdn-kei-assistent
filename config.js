@@ -1,19 +1,13 @@
 // =====================================================
-// KONFIGURASI WEBSITE (PERINGATAN: API KEY TER-EKSPOS!)
+// KONFIGURASI WEBSITE – UBAH SESUAI KEBUTUHAN
 // =====================================================
 
 const WEBSITE_CONFIG = {
-    // API Key Pakasir (RAHASIA! Jangan pernah simpan di frontend jika publik)
-    API_KEY: 'jXWwWYZLB8iUoRXBKts0zfXQFhTj21kG',
-    
-    // Slug proyek
-    PROJECT_SLUG: 'nyzz-store',
-    
-    // URL API Pakasir
-    PAKASIR_API_URL: 'https://app.pakasir.com/api',
-    
-    // Minimal donasi
+    // Minimal donasi (default 500)
     MIN_DONATION: 500,
+    
+    // Slug proyek (hanya untuk informasi)
+    PROJECT_SLUG: 'nyzz-store',
     
     // Tampilan
     APP_NAME: 'KEI ASSISTENT',

@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const MIN_AMOUNT = 500;
+    // Ambil konfigurasi (default minimal 500)
+    const config = window.WEBSITE_CONFIG || {};
+    const MIN_AMOUNT = config.MIN_DONATION || 500;
+
     const payBtn = document.getElementById('payBtn');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
     const customAmountInput = document.getElementById('customAmount');
