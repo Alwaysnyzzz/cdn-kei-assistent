@@ -1,9 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const config = window.WEBSITE_CONFIG || {};
-    const API_KEY = config.API_KEY;
-    const PROJECT_SLUG = config.PROJECT_SLUG;
-    const PAKASIR_API_URL = config.PAKASIR_API_URL;
-
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
 
@@ -22,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const data = JSON.parse(stored);
     const amount = data.amount;
-    const orderId = data.order_id;
+    const orderId = data.id;
 
     // Tampilkan QR
     const qrisImage = document.getElementById('qrisImage');
@@ -62,39 +57,70 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Cek Status
-    document.getElementById('checkStatusBtn').addEventListener('click', async function() {
+    document.getElementById('checkStatusBtn').addEventListener('click', function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
         const statusArea = document.getElementById('statusArea');
         statusArea.innerHTML = '';
 
-        try {
-            const url = `${PAKASIR_API_URL}/transactiondetail?project=${PROJECT_SLUG}&amount=${amount}&order_id=${orderId}&api_key=${API_KEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
+        // Ambil data terbaru dari localStorage
+        const updatedData = JSON.parse(localStorage.getItem(`lobbyQris_${transactionId}`));
+        if (!updatedData) {
+            statusArea.innerHTML = '<p style="color:#ff69b4;">Data tidak ditemukan</p>';
             overlay.classList.remove('show');
-
-            if (data.transaction) {
-                const tx = data.transaction;
-                if (tx.status === 'completed' || tx.status === 'paid' || tx.status === 'success') {
-                    statusArea.innerHTML = '<p style="color:#28a745;">✅ Pembayaran sukses</p>';
-                } else if (tx.status === 'pending' || tx.status === 'waiting') {
-                    statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
-                } else {
-                    statusArea.innerHTML = `<p style="color:#ff69b4;">❌ Gagal (${tx.status})</p>`;
-                }
-            } else {
-                statusArea.innerHTML = '<p style="color:#ff69b4;">Transaksi tidak ditemukan</p>';
-            }
-        } catch (err) {
-            overlay.classList.remove('show');
-            console.error(err);
-            if (err.message.includes('Failed to fetch')) {
-                alert('Gagal menghubungi API Pakasir. Kemungkinan karena CORS.');
-            } else {
-                alert('Error: ' + err.message);
-            }
+            return;
         }
+
+        overlay.classList.remove('show');
+
+        if (updatedData.status === 'completed') {
+            // Tampilkan struk
+            const fee = Math.floor(amount * 0.007); // contoh fee 0.7%
+            const net = amount - fee;
+            const waktu = new Date(updatedData.completed_at || Date.now()).toLocaleString('id-ID');
+
+            statusArea.innerHTML = `
+                <div class="status-success">
+                    <div class="success-circle animated-pulse">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3>✅ Pembayaran Sukses!</h3>
+                    <div class="transaction-details">
+                        <p><strong>ID Transaksi:</strong> ${orderId}</p>
+                        <p><strong>Jumlah:</strong> Rp ${amount.toLocaleString()}</p>
+                        <p><strong>Fee:</strong> Rp ${fee.toLocaleString()}</p>
+                        <p><strong>Saldo diterima:</strong> Rp ${net.toLocaleString()}</p>
+                        <p><strong>Via:</strong> QRIS (Simulasi)</p>
+                        <p><strong>Waktu:</strong> ${waktu}</p>
+                    </div>
+                    <button class="btn-struk" id="closeStruk">Tutup</button>
+                </div>
+            `;
+            document.getElementById('closeStruk')?.addEventListener('click', () => {
+                statusArea.innerHTML = '';
+            });
+        } else if (updatedData.status === 'pending') {
+            statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
+        } else {
+            statusArea.innerHTML = `<p style="color:#ff69b4;">Status: ${updatedData.status}</p>`;
+        }
+    });
+
+    // Simulasi Bayar
+    document.getElementById('simulatePayBtn').addEventListener('click', function() {
+        if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;
+
+        const stored = localStorage.getItem(`lobbyQris_${transactionId}`);
+        if (!stored) return;
+
+        const data = JSON.parse(stored);
+        data.status = 'completed';
+        data.completed_at = new Date().toISOString();
+        localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
+
+        alert('Simulasi berhasil! Status berubah menjadi completed.');
+        // Panggil cek status untuk menampilkan struk
+        document.getElementById('checkStatusBtn').click();
     });
 
     // Batalkan transaksi
@@ -116,4 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', (e) => {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
+
+    // Inisialisasi particles (jika ada)
+    if (typeof particleground !== 'undefined') {
+        particleground(document.getElementById('particles'), {
+            dotColor: '#ffb6c1',
+            lineColor: '#ff69b4',
+            density: 12000
+        });
+    }
 });

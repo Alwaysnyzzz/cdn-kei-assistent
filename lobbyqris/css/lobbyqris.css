@@ -115,6 +115,68 @@
     animation: spin 1s linear infinite;
 }
 
+.status-success, .status-failed {
+    text-align: center;
+    padding: 20px 0;
+}
+.success-circle {
+    background: #28a745;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 0 20px #28a745;
+    animation: pulse 1.5s infinite;
+}
+.success-circle i {
+    font-size: 2.5rem;
+    color: white;
+}
+.failed-circle {
+    background: #dc3545;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 0 20px #dc3545;
+}
+.failed-circle i {
+    font-size: 2.5rem;
+    color: white;
+}
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
+    50% { transform: scale(1.1); box-shadow: 0 0 40px #28a745; }
+    100% { transform: scale(1); box-shadow: 0 0 20px #28a745; }
+}
+.transaction-details {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: left;
+}
+.transaction-details p {
+    margin: 8px 0;
+    color: #ffccdd;
+}
+.btn-struk {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 10px 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
 .modal {
     display: none;
     position: fixed;

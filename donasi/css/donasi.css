@@ -30,7 +30,6 @@
     font-size: 1rem;
 }
 
-/* Quick amount buttons dengan efek */
 .quick-amount-container {
     display: flex;
     gap: 8px;
@@ -48,24 +47,6 @@
     transition: 0.3s;
     flex: 1 0 auto;
     min-width: 70px;
-    position: relative;
-    overflow: hidden;
-}
-.quick-amount-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s;
-}
-.quick-amount-btn:active::after {
-    width: 200px;
-    height: 200px;
 }
 .quick-amount-btn:hover {
     background: #ff69b4;
@@ -79,29 +60,50 @@
     box-shadow: 0 0 20px #ff1493;
 }
 
-/* Tombol custom nominal */
-.btn-custom-nominal {
+.custom-amount-wrapper {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: rgba(255,105,180,0.05);
-    border: 1px dashed #ff69b4;
-    border-radius: 60px;
-    padding: 12px;
-    color: #ffb6c1;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.3s;
+    gap: 10px;
     margin-bottom: 20px;
 }
-.btn-custom-nominal:hover {
-    background: rgba(255,105,180,0.2);
-    color: #ff1493;
-    border-color: #ff1493;
+.custom-amount-input-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #ff69b4;
+    border-radius: 60px;
+    overflow: hidden;
+}
+.currency-prefix {
+    padding: 0 15px;
+    color: #ffb6c1;
+    font-weight: 600;
+    background: rgba(255,105,180,0.1);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid #ff69b4;
+}
+#customAmount {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 15px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+#applyCustomAmount {
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    border: none;
+    border-radius: 60px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-/* Info nominal terpilih */
 .selected-amount-info {
     background: rgba(255,105,180,0.1);
     border: 1px solid #ff69b4;
@@ -122,8 +124,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Tombol Buat QRIS */
-.btn-donasi {
+#payBtn {
     width: 100%;
     background: linear-gradient(135deg, #ff69b4, #ff1493);
     border: none;
@@ -139,16 +140,13 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
+    margin-top: 20px;
 }
-.btn-donasi:hover:not(:disabled) {
+#payBtn:hover:not(:disabled) {
     transform: scale(1.02);
     box-shadow: 0 0 25px #ff1493;
 }
-.btn-donasi:disabled {
+#payBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-.btn-donasi:disabled:hover {
-    transform: none;
-    box-shadow: 0 0 15px #ff69b4;
 }
