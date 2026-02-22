@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== AMBIL KONFIGURASI =====
+    const config = window.WEBSITE_CONFIG || {};
+    const IS_PRODUCTION = config.IS_PRODUCTION || false;
+
+    // ===== ELEMEN =====
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
 
@@ -19,14 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const amount = data.amount;
     const orderId = data.id;
 
-    // Tampilkan QR
+    // ===== TAMPILKAN QR =====
     const qrisImage = document.getElementById('qrisImage');
     qrisImage.src = data.qr_url;
     qrisImage.style.display = 'inline';
     document.getElementById('downloadQrisBtn').dataset.qrUrl = data.qr_url;
     document.getElementById('transactionId').textContent = transactionId;
 
-    // Timer
+    // ===== TIMER =====
     function startTimer(expiry) {
         const timer = document.getElementById('timer');
         const update = () => {
@@ -45,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     startTimer(data.expiry);
 
-    // Download QR
+    // ===== DOWNLOAD QR =====
     document.getElementById('downloadQrisBtn').addEventListener('click', async function() {
         const url = this.dataset.qrUrl;
         if (!url) return;
@@ -56,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
     });
 
-    // Cek Status
+    // ===== CEK STATUS =====
     document.getElementById('checkStatusBtn').addEventListener('click', function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
@@ -74,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (updatedData.status === 'completed') {
             statusArea.innerHTML = '<p style="color:#28a745;">✅ Status: Sukses</p>';
-            // Tampilkan modal sukses
             showSuccessModal();
         } else if (updatedData.status === 'pending') {
             statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Status: Menunggu pembayaran</p>';
@@ -83,23 +87,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Simulasi Bayar (langsung sukses)
-    document.getElementById('simulatePayBtn').addEventListener('click', function() {
-        if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;
+    // ===== SIMULASI BAYAR (HANYA UNTUK SANDBOX) =====
+    // Tombol simulasi hanya akan muncul jika IS_PRODUCTION = false
+    const simulateBtn = document.getElementById('simulatePayBtn');
+    if (simulateBtn) {
+        if (IS_PRODUCTION) {
+            simulateBtn.style.display = 'none'; // Sembunyikan di production
+        } else {
+            simulateBtn.addEventListener('click', function() {
+                if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;
 
-        const stored = localStorage.getItem(`lobbyQris_${transactionId}`);
-        if (!stored) return;
+                const stored = localStorage.getItem(`lobbyQris_${transactionId}`);
+                if (!stored) return;
 
-        const data = JSON.parse(stored);
-        data.status = 'completed';
-        data.completed_at = new Date().toISOString();
-        localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
+                const data = JSON.parse(stored);
+                data.status = 'completed';
+                data.completed_at = new Date().toISOString();
+                localStorage.setItem(`lobbyQris_${transactionId}`, JSON.stringify(data));
 
-        // Tampilkan modal sukses
-        showSuccessModal();
-    });
+                showSuccessModal();
+            });
+        }
+    }
 
-    // Elemen modal sukses
+    // ===== MODAL SUKSES =====
     const successModal = document.getElementById('successModal');
     const successDetailBtn = document.getElementById('successDetailBtn');
     const successHomeBtn = document.getElementById('successHomeBtn');
@@ -128,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Batalkan transaksi
+    // ===== BATALKAN TRANSAKSI =====
     const cancelBtn = document.getElementById('cancelBtn');
     const cancelModal = document.getElementById('cancelModal');
     const confirmYes = document.getElementById('confirmCancelYes');
@@ -148,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    // Inisialisasi particles
+    // ===== PARTICLES =====
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',
