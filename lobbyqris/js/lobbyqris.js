@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== AMBIL KONFIGURASI =====
     const config = window.WEBSITE_CONFIG || {};
     const IS_PRODUCTION = config.IS_PRODUCTION || false;
+    const API_BASE_URL = config.PAKASIR_API_URL || 'https://app.pakasir.com/api'; // Jika perlu dipanggil langsung, tapi di sini tidak dipakai untuk create QR
 
     // ===== ELEMEN =====
     const urlParams = new URLSearchParams(window.location.search);
@@ -23,12 +24,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = JSON.parse(stored);
     const amount = data.amount;
     const orderId = data.id;
+    const qrString = data.qr_raw || data.payment_number; // jika ada field payment_number, gunakan itu. Di sini kita asumsikan data sudah menyimpan payment_number
 
-    // ===== TAMPILKAN QR =====
+    // Jika data belum menyimpan payment_number, kita perlu mengambil dari localStorage yang lain? Tapi dari donasi.js kita menyimpan qr_url dummy. Untuk production, kita harus mengambil payment_number dari respons API create-qris.
+    // Karena ini adalah file lobby untuk production, kita harus memastikan bahwa data yang disimpan di localStorage sudah berisi payment_number.
+    // Untuk sementara, kita gunakan data.qr_url yang lama, tapi lebih baik kita ubah donasi.js untuk menyimpan payment_number juga.
+
+    // Tapi karena kita sedang fokus memperbaiki QR tidak valid, kita asumsikan data memiliki field payment_number.
+    // Jika tidak, kita perlu mengambil dari API lagi. Namun di sini kita akan menggunakan payment_number dari data (jika ada) atau fallback ke qr_url lama.
+    const paymentNumber = data.payment_number || data.qr_raw;
+
+    // ===== TAMPILKAN QR DENGAN LIBRARY QRCODE =====
     const qrisImage = document.getElementById('qrisImage');
-    qrisImage.src = data.qr_url;
-    qrisImage.style.display = 'inline';
-    document.getElementById('downloadQrisBtn').dataset.qrUrl = data.qr_url;
+    const downloadQrisBtn = document.getElementById('downloadQrisBtn');
+
+    if (paymentNumber) {
+        // Generate QR menggunakan library qrcode
+        QRCode.toDataURL(paymentNumber, { width: 300 }, function(err, url) {
+            if (err) {
+                console.error('QR Generation Error:', err);
+                alert('Gagal membuat QR code. Silakan coba lagi.');
+                return;
+            }
+            qrisImage.src = url;
+            qrisImage.style.display = 'inline';
+            downloadQrisBtn.dataset.qrUrl = url;
+        });
+    } else {
+        // Fallback ke URL lama (misalnya dari qrserver)
+        qrisImage.src = data.qr_url;
+        qrisImage.style.display = 'inline';
+        downloadQrisBtn.dataset.qrUrl = data.qr_url;
+    }
+
     document.getElementById('transactionId').textContent = transactionId;
 
     // ===== TIMER =====
@@ -51,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     startTimer(data.expiry);
 
     // ===== DOWNLOAD QR =====
-    document.getElementById('downloadQrisBtn').addEventListener('click', async function() {
+    downloadQrisBtn.addEventListener('click', async function() {
         const url = this.dataset.qrUrl;
         if (!url) return;
         const blob = await fetch(url).then(r => r.blob());
@@ -88,11 +116,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== SIMULASI BAYAR (HANYA UNTUK SANDBOX) =====
-    // Tombol simulasi hanya akan muncul jika IS_PRODUCTION = false
     const simulateBtn = document.getElementById('simulatePayBtn');
     if (simulateBtn) {
         if (IS_PRODUCTION) {
-            simulateBtn.style.display = 'none'; // Sembunyikan di production
+            simulateBtn.style.display = 'none';
         } else {
             simulateBtn.addEventListener('click', function() {
                 if (!confirm('Jalankan simulasi pembayaran? (Hanya untuk uji coba)')) return;

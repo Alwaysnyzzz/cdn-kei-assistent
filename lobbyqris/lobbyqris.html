@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="css/lobbyqris.css">
     <script src="../config.js"></script>
+    <!-- Library QRCode untuk generate QR di frontend -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         .nav-links { display: none !important; }
         header {
@@ -93,7 +95,7 @@
                 <button class="btn-check-status" id="checkStatusBtn">Cek Status</button>
                 <button class="btn-cancel" id="cancelBtn">Batalkan Transaksi</button>
             </div>
-            <!-- Tombol Simulasi (hanya untuk uji coba) -->
+            <!-- Tombol Simulasi (akan disembunyikan di production oleh JS) -->
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button id="simulatePayBtn" class="btn-check-status" style="background:#ffc107; color:black;">🧪 Simulasi Bayar</button>
             </div>
