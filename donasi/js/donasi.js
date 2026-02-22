@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('donasi.js loaded');
-
     const config = window.WEBSITE_CONFIG || {};
-    const API_KEY = config.PAKASIR_API_KEY;
-    const PROJECT_SLUG = config.PROJECT_SLUG;
-    const API_URL = config.PAKASIR_API_URL || 'https://app.pakasir.com/api';
+    const API_BASE_URL = config.API_BASE_URL;
     const MIN_AMOUNT = config.MIN_DONATION || 500;
 
     const payBtn = document.getElementById('payBtn');
@@ -17,6 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
+    // Validasi hanya URL backend
+    if (!API_BASE_URL) {
+        alert('Konfigurasi tidak lengkap (URL backend tidak ditemukan). Hubungi admin.');
+        payBtn.disabled = true;
+        return;
+    }
+
     if (customAmountInput) {
         customAmountInput.min = MIN_AMOUNT;
         customAmountInput.placeholder = `Min ${MIN_AMOUNT.toLocaleString()}`;
@@ -24,13 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function generateOrderId() {
         return 'DON-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
-    }
-
-    if (!API_KEY || !PROJECT_SLUG) {
-        console.error('API Key atau Project Slug tidak ditemukan di config.js');
-        alert('Konfigurasi tidak lengkap. Hubungi admin.');
-        payBtn.disabled = true;
-        return;
     }
 
     quickAmountBtns.forEach(btn => {
@@ -67,25 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         payBtn.disabled = true;
-        payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungi Pakasir...';
+        payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungi backend...';
 
         try {
-            console.log('Mengirim request ke Pakasir...');
-            const response = await fetch(`${API_URL}/transactioncreate/qris`, {
+            const response = await fetch(`${API_BASE_URL}/create-qris`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    project: PROJECT_SLUG,
-                    order_id: selectedOrderId,
-                    amount: selectedAmount,
-                    api_key: API_KEY
-                })
+                body: JSON.stringify({ amount: selectedAmount, orderId: selectedOrderId })
             });
-
             const data = await response.json();
-            console.log('Respons dari Pakasir:', data);
 
-            if (data.payment && data.payment.payment_number) {
+            if (response.ok && data.success) {
                 const payment = data.payment;
                 const qrString = payment.payment_number;
                 const expiry = Date.now() + 10 * 60 * 1000;
@@ -101,17 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify(transactionData));
-                console.log('Data disimpan di localStorage, redirect ke lobby...');
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;
             } else {
-                console.error('Respons tidak memiliki payment_number:', data);
-                alert('Gagal: Respons dari server tidak valid. Lihat console.');
+                alert('Gagal: ' + (data.error || JSON.stringify(data)));
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
             }
         } catch (err) {
             console.error('Fetch error:', err);
-            alert('Gagal menghubungi server: ' + err.message);
+            alert('Gagal menghubungi backend. Periksa koneksi.');
             payBtn.disabled = false;
             payBtn.innerHTML = '<i class="fas fa-qrcode"></i> Buat QRIS';
         }
