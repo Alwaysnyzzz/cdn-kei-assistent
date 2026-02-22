@@ -2,9 +2,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== AMBIL KONFIGURASI =====
     const config = window.WEBSITE_CONFIG || {};
     const IS_PRODUCTION = config.IS_PRODUCTION || false;
-    const API_BASE_URL = config.PAKASIR_API_URL || 'https://app.pakasir.com/api'; // Jika perlu dipanggil langsung, tapi di sini tidak dipakai untuk create QR
+    const API_KEY = config.PAKASIR_API_KEY;
+    const PROJECT_SLUG = config.PROJECT_SLUG;
+    const API_URL = config.PAKASIR_API_URL || 'https://app.pakasir.com/api';
 
-    // ===== ELEMEN =====
+    // ===== ELEMEN DOM =====
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
 
@@ -24,22 +26,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = JSON.parse(stored);
     const amount = data.amount;
     const orderId = data.id;
-    const qrString = data.qr_raw || data.payment_number; // jika ada field payment_number, gunakan itu. Di sini kita asumsikan data sudah menyimpan payment_number
+    const paymentNumber = data.payment_number; // String QRIS asli dari Pakasir
 
-    // Jika data belum menyimpan payment_number, kita perlu mengambil dari localStorage yang lain? Tapi dari donasi.js kita menyimpan qr_url dummy. Untuk production, kita harus mengambil payment_number dari respons API create-qris.
-    // Karena ini adalah file lobby untuk production, kita harus memastikan bahwa data yang disimpan di localStorage sudah berisi payment_number.
-    // Untuk sementara, kita gunakan data.qr_url yang lama, tapi lebih baik kita ubah donasi.js untuk menyimpan payment_number juga.
-
-    // Tapi karena kita sedang fokus memperbaiki QR tidak valid, kita asumsikan data memiliki field payment_number.
-    // Jika tidak, kita perlu mengambil dari API lagi. Namun di sini kita akan menggunakan payment_number dari data (jika ada) atau fallback ke qr_url lama.
-    const paymentNumber = data.payment_number || data.qr_raw;
-
-    // ===== TAMPILKAN QR DENGAN LIBRARY QRCODE =====
+    // ===== TAMPILKAN QR MENGGUNAKAN LIBRARY QRCODE =====
     const qrisImage = document.getElementById('qrisImage');
     const downloadQrisBtn = document.getElementById('downloadQrisBtn');
 
     if (paymentNumber) {
-        // Generate QR menggunakan library qrcode
         QRCode.toDataURL(paymentNumber, { width: 300 }, function(err, url) {
             if (err) {
                 console.error('QR Generation Error:', err);
@@ -51,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadQrisBtn.dataset.qrUrl = url;
         });
     } else {
-        // Fallback ke URL lama (misalnya dari qrserver)
+        // Fallback jika paymentNumber tidak ada (seharusnya tidak terjadi)
         qrisImage.src = data.qr_url;
         qrisImage.style.display = 'inline';
         downloadQrisBtn.dataset.qrUrl = data.qr_url;
@@ -59,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('transactionId').textContent = transactionId;
 
-    // ===== TIMER =====
+    // ===== TIMER 10 MENIT =====
     function startTimer(expiry) {
         const timer = document.getElementById('timer');
         const update = () => {
@@ -90,28 +83,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== CEK STATUS =====
-    document.getElementById('checkStatusBtn').addEventListener('click', function() {
+    document.getElementById('checkStatusBtn').addEventListener('click', async function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
         const statusArea = document.getElementById('statusArea');
         statusArea.innerHTML = '';
 
-        const updatedData = JSON.parse(localStorage.getItem(`lobbyQris_${transactionId}`));
-        if (!updatedData) {
-            statusArea.innerHTML = '<p style="color:#ff69b4;">Data tidak ditemukan</p>';
+        try {
+            const response = await fetch(`${API_URL}/transactiondetail?project=${PROJECT_SLUG}&amount=${amount}&order_id=${orderId}&api_key=${API_KEY}`);
+            const data = await response.json();
             overlay.classList.remove('show');
-            return;
-        }
 
-        overlay.classList.remove('show');
-
-        if (updatedData.status === 'completed') {
-            statusArea.innerHTML = '<p style="color:#28a745;">✅ Status: Sukses</p>';
-            showSuccessModal();
-        } else if (updatedData.status === 'pending') {
-            statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Status: Menunggu pembayaran</p>';
-        } else {
-            statusArea.innerHTML = `<p style="color:#ff69b4;">Status: ${updatedData.status}</p>`;
+            if (data.transaction) {
+                const tx = data.transaction;
+                if (tx.status === 'completed' || tx.status === 'paid' || tx.status === 'success') {
+                    statusArea.innerHTML = '<p style="color:#28a745;">✅ Status: Sukses</p>';
+                    showSuccessModal();
+                } else if (tx.status === 'pending' || tx.status === 'waiting') {
+                    statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Status: Menunggu pembayaran</p>';
+                } else {
+                    statusArea.innerHTML = `<p style="color:#ff69b4;">Status: ${tx.status}</p>`;
+                }
+            } else {
+                statusArea.innerHTML = '<p style="color:#ff69b4;">Transaksi tidak ditemukan</p>';
+            }
+        } catch (err) {
+            overlay.classList.remove('show');
+            console.error(err);
+            statusArea.innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
         }
     });
 
@@ -186,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    // ===== PARTICLES =====
+    // ===== PARTICLES (JIKA ADA) =====
     if (typeof particleground !== 'undefined') {
         particleground(document.getElementById('particles'), {
             dotColor: '#ffb6c1',
