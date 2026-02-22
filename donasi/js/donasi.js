@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Ambil konfigurasi dari window (jika ada)
+    // Ambil konfigurasi (jika ada) atau gunakan default
     const config = window.DONASI_CONFIG || {};
     const API_BASE_URL = config.API_BASE_URL || 'https://vercel-upload-jet.vercel.app/api';
-    const MIN_AMOUNT = 500; // Minimal dari Pakasir adalah Rp 500
+    const MIN_AMOUNT = config.MIN_AMOUNT || 500;
 
     const payBtn = document.getElementById('payBtn');
     const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAmount = null;
     let selectedOrderId = null;
 
-    // Set placeholder dan min input manual sesuai minimal
     if (customAmountInput) {
         customAmountInput.min = MIN_AMOUNT;
         customAmountInput.placeholder = `Min ${MIN_AMOUNT.toLocaleString()}`;
@@ -72,13 +71,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const payment = data.payment;
                 const qrString = payment.payment_number;
                 const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
-                const expiry = Date.now() + 10 * 60 * 1000;
+                const expiry = Date.now() + 10 * 60 * 1000; // 10 menit
 
                 localStorage.setItem(`lobbyQris_${selectedOrderId}`, JSON.stringify({
                     id: selectedOrderId,
                     amount: selectedAmount,
                     qr_url: qrApiUrl,
-                    expiry: expiry
+                    expiry: expiry,
+                    order_id: payment.order_id
                 }));
 
                 window.location.href = `lobbyqris/lobbyqris.html?id=${selectedOrderId}`;

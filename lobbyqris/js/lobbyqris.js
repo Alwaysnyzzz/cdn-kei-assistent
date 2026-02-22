@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api';
+    const API_BASE_URL = 'https://vercel-upload-jet.vercel.app/api'; // GANTI DENGAN URL VERCEL ANDA
 
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
@@ -19,10 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const data = JSON.parse(stored);
     const amount = data.amount;
-    const orderId = data.id;
+    const orderId = data.order_id; // order_id asli dari Pakasir
 
-    document.getElementById('qrisImage').src = data.qr_url;
-    document.getElementById('qrisImage').style.display = 'inline';
+    const qrisImage = document.getElementById('qrisImage');
+    qrisImage.src = data.qr_url;
+    qrisImage.style.display = 'inline';
     document.getElementById('downloadQrisBtn').dataset.qrUrl = data.qr_url;
     document.getElementById('transactionId').textContent = transactionId;
 
@@ -35,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             }
             const min = Math.floor(diff / 60000);
-            const sec = Math.floor((diff % 60000) / 1000);
-            timer.textContent = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+            const det = Math.floor((diff % 60000) / 1000);
+            timer.textContent = `${min.toString().padStart(2,'0')}:${det.toString().padStart(2,'0')}`;
             return false;
         };
         update();
@@ -57,7 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('checkStatusBtn').addEventListener('click', async function() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.add('show');
-        document.getElementById('statusArea').innerHTML = '';
+        const statusArea = document.getElementById('statusArea');
+        statusArea.innerHTML = '';
 
         try {
             const res = await fetch(`${API_BASE_URL}/check-status`, {
@@ -70,46 +72,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (res.ok && data.success) {
                 const tx = data.transaction;
-                if (tx.status === 'success' || tx.status === 'paid') {
-                    document.getElementById('statusArea').innerHTML = '<p style="color:#28a745;">✅ Pembayaran sukses</p>';
+                if (tx.status === 'success' || tx.status === 'paid' || tx.status === 'completed') {
+                    statusArea.innerHTML = '<p style="color:#28a745;">✅ Pembayaran sukses</p>';
                 } else if (tx.status === 'pending' || tx.status === 'waiting') {
-                    document.getElementById('statusArea').innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
+                    statusArea.innerHTML = '<p style="color:#ffccdd;">⏳ Menunggu pembayaran</p>';
                 } else {
-                    document.getElementById('statusArea').innerHTML = '<p style="color:#ff69b4;">❌ Gagal</p>';
+                    statusArea.innerHTML = `<p style="color:#ff69b4;">❌ Gagal (${tx.status})</p>`;
                 }
             } else {
-                document.getElementById('statusArea').innerHTML = '<p style="color:#ff69b4;">Transaksi tidak ditemukan</p>';
+                statusArea.innerHTML = '<p style="color:#ff69b4;">Transaksi tidak ditemukan</p>';
             }
         } catch (err) {
             overlay.classList.remove('show');
-            document.getElementById('statusArea').innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
+            statusArea.innerHTML = `<p style="color:#ff69b4;">Error: ${err.message}</p>`;
         }
     });
 
-    document.getElementById('cancelBtn').addEventListener('click', function() {
-        document.getElementById('cancelModal').classList.add('show');
-    });
+    const cancelBtn = document.getElementById('cancelBtn');
+    const cancelModal = document.getElementById('cancelModal');
+    const confirmYes = document.getElementById('confirmCancelYes');
+    const confirmNo = document.getElementById('confirmCancelNo');
 
-    document.getElementById('confirmCancelYes').addEventListener('click', function() {
+    cancelBtn.addEventListener('click', () => cancelModal.classList.add('show'));
+
+    confirmYes.addEventListener('click', function() {
         localStorage.removeItem(`lobbyQris_${transactionId}`);
+        cancelModal.classList.remove('show');
         window.location.href = '../donasi.html';
     });
 
-    document.getElementById('confirmCancelNo').addEventListener('click', function() {
-        document.getElementById('cancelModal').classList.remove('show');
-    });
+    confirmNo.addEventListener('click', () => cancelModal.classList.remove('show'));
 
     window.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('cancelModal')) {
-            document.getElementById('cancelModal').classList.remove('show');
-        }
+        if (e.target === cancelModal) cancelModal.classList.remove('show');
     });
 
-    if (typeof particleground !== 'undefined') {
-        particleground(document.getElementById('particles'), {
-            dotColor: '#ffb6c1',
-            lineColor: '#ff69b4',
-            density: 12000
-        });
-    }
+    particleground(document.getElementById('particles'), {
+        dotColor: '#ffb6c1',
+        lineColor: '#ff69b4',
+        density: 12000
+    });
 });
